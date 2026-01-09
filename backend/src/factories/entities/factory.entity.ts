@@ -12,7 +12,7 @@ export class Factory {
   @PrimaryGeneratedColumn('identity')
   id: number;
 
-  @Column('varchar', { nullable: true, length: 225 })
+  @Column('varchar', { nullable: true, length: 225, unique: true })
   name: string;
 
   @CreateDateColumn({ name: 'created_at' })
