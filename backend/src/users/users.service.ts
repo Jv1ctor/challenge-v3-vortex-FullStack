@@ -25,7 +25,7 @@ export class UsersService {
     
     if(existUsername) throw new BadRequestException()
 
-    const saltRounds = this.configService.get<number>("BCRYPT_SALT_ROUNDS", 10)
+    const saltRounds = Number(this.configService.get<number>("BCRYPT_SALT_ROUNDS", 10))
     const hashedPass = await bcrypt.hash(password, saltRounds)
 
     await this.userRepository.insert({
