@@ -17,7 +17,7 @@ export class AuthService {
 
     if(!matchPass) throw new UnauthorizedException()
       
-    const accessToken = await this.jwtService.signAsync({}, { expiresIn: "2min" })
+    const accessToken = await this.jwtService.signAsync({ id: user.id }, { expiresIn: "60s" })
 
     return { access_token: accessToken }
   }
