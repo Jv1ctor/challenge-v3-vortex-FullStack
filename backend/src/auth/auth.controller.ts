@@ -6,11 +6,13 @@ import {
 } from './dtos/sign-in-request.dto';
 import { ZodValidation } from 'src/common/decorators/zod-validation.decorator';
 import { SignInResponseDto } from './dtos/sign-in-response.dto';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @Post('login')
   @HttpCode(200)
   @ZodValidation(SignInRequestSchema)
