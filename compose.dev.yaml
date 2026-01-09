@@ -13,7 +13,8 @@ services:
   api:
     container_name: challenge-api
     image: challenge-v3-backend:dev
-    env_file: "./backend/.env.dev"
+    env_file:
+      - ./backend/.env.dev
     build: 
       context: ./backend
       dockerfile: Dockerfile.dev
@@ -28,10 +29,12 @@ services:
     container_name: challenge-db
     image: postgres:16-alpine
     restart: always
+    env_file:
+      - ./backend/.env.dev
     environment:
-       POSTGRES_USER: DB_USER
-       POSTGRES_PASSWORD: DB_PASS
-       POSTGRES_DB: DB_NAME
+       POSTGRES_USER: ${DB_USER}
+       POSTGRES_PASSWORD: ${DB_PASS}
+       POSTGRES_DB: ${DB_NAME}
     ports:
       - 5000:5432
     volumes:
