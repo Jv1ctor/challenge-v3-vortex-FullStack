@@ -40,7 +40,9 @@ export class FactoriesService {
       relations: { factory: true }
     })
 
-    if(user?.factory.id) throw new BadRequestException('already registed factory')
+    if(!user) throw new BadRequestException("not found user")
+
+    if(user.factory !== null && user.factory.id) throw new BadRequestException('already registed factory')
 
     await this.userRepository.update(
       { id: userId },
