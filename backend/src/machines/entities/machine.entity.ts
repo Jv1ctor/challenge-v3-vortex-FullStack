@@ -1,10 +1,12 @@
 import { Factory } from 'src/factories/entities/factory.entity';
+import { Registries } from 'src/registries/entities/registries.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -35,4 +37,7 @@ export class Machine {
   @ManyToOne(() => Factory, (factory) => factory.machines)
   @JoinColumn({ name: 'factory_id' })
   factory: Factory;
+
+  @OneToMany(() => Registries, (registries) => registries.machine)
+  registries: Registries;
 }
