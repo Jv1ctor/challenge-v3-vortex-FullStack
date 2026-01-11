@@ -5,17 +5,19 @@ import { AuthModule } from './auth/auth.module';
 import { DbModule } from './db/db.module';
 import { FactoriesModule } from './factories/factories.module';
 import { MachinesModule } from './machines/machines.module';
+import { RegistriesModule } from './registries/registries.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true
+      isGlobal: true,
     }),
     DbModule,
     UsersModule,
     FactoriesModule,
     AuthModule,
-    MachinesModule
-  ]
+    MachinesModule,
+    RegistriesModule,
+  ],
 })
 export class AppModule {}
