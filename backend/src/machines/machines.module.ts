@@ -3,9 +3,10 @@ import { MachinesController } from './machines.controller';
 import { MachinesService } from './machines.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Machine } from './entities/machine.entity';
+import { RegistriesModule } from 'src/registries/registries.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Machine])],
+  imports: [RegistriesModule, TypeOrmModule.forFeature([Machine])],
   controllers: [MachinesController],
   providers: [MachinesService],
 })
