@@ -4,13 +4,12 @@ import {
   Get,
   HttpCode,
   Param,
-  ParseFloatPipe,
   ParseIntPipe,
   Post,
 } from '@nestjs/common';
 import { MachinesService } from './machines.service';
 import { MachineDto } from './dtos/machine.dto';
-import { RegistriesByMachineDto } from './dtos/registries-machine.dto';
+import { RegistriesByMachineDto } from './dtos/registries-by-machine.dto';
 import { RegistriesService } from 'src/registries/registries.service';
 import {
   type InsertRegistriesByMachineDto,
