@@ -1,33 +1,38 @@
-import { Factory } from "src/factories/entities/factory.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Factory } from 'src/factories/entities/factory.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
-
-
-
-@Entity("machines")
+@Entity('machines')
 export class Machine {
-    @PrimaryGeneratedColumn('identity')
-    id: number;
+  @PrimaryGeneratedColumn('identity')
+  id: number;
 
-    @Column('varchar', { nullable: true, length: 225, unique: true })
-    name: string;
+  @Column('varchar', { length: 225, unique: true })
+  name: string;
 
-    @Column("varchar")
-    model: string
+  @Column('varchar', { nullable: true })
+  model: string;
 
-    @Column("varchar")
-    manufacturer: string
+  @Column('varchar', { nullable: true })
+  manufacturer: string;
 
-    @Column("text")
-    description: string
+  @Column('text', { nullable: true })
+  description: string;
 
-    @CreateDateColumn({ name: 'created_at' })
-    createdAt: Date;
-    
-    @UpdateDateColumn({ name: "updated_at"})
-    updatedAt: Date;
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
 
-    @ManyToOne(() => Factory, (factory) => factory.machines)
-    @JoinColumn({ name: 'factory_id' })
-    factory: Factory
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date;
+
+  @ManyToOne(() => Factory, (factory) => factory.machines)
+  @JoinColumn({ name: 'factory_id' })
+  factory: Factory;
 }
