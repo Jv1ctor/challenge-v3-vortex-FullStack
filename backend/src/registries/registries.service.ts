@@ -57,7 +57,6 @@ export class RegistriesService {
         id: true,
         value: true,
         createdAt: true,
-        updatedAt: true,
         user: {
           id: true,
           name: true,
