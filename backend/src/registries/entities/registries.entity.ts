@@ -22,10 +22,13 @@ export class Registries {
   createdAt: Date;
 
   @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date;
+
   @ManyToOne(() => Machine, (machine) => machine.registries)
   @JoinColumn({ name: 'machine_id' })
   machine: Machine;
 
   @ManyToOne(() => User, (user) => user.registries)
+  @JoinColumn({ name: 'user_id' })
   user: User;
 }
