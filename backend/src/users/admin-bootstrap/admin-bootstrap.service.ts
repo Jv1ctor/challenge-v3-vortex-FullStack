@@ -1,6 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
+import { User } from '../entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 import bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -16,8 +16,9 @@ export class AdminBootstrapService implements OnModuleInit {
   private readonly logger = new Logger(AdminBootstrapService.name);
 
   async onModuleInit() {
-    const user = await this.usersRepository.count();
-    if (user > 0) return;
+    // const user = await this.usersRepository.count();
+    const adminCount = await this.usersRepository.countBy({ isAdmin: true });
+    if (adminCount > 0) return;
 
     const usernameAdmin = this.configService.get<string>('ADMIN_USERNAME');
     const passworAdmin = this.configService.get<string>('ADMIN_PASSWORD');
