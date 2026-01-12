@@ -3,7 +3,7 @@ import z, { ZodError } from 'zod';
 
 @Injectable()
 export class ZodValidationPipe implements PipeTransform {
-  constructor(private schema: z.ZodObject) {}
+  constructor(private schema: z.ZodObject | z.ZodEnum) {}
 
   private getZodMessageError(zodError: ZodError): string[] {
     return zodError.issues.map((issue) => issue.message);
