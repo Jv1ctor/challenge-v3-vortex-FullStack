@@ -1,10 +1,12 @@
 import { Factory } from 'src/factories/entities/factory.entity';
+import { Registries } from 'src/registries/entities/registries.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -32,4 +34,7 @@ export class User {
   @ManyToOne(() => Factory, (factory) => factory.users)
   @JoinColumn({ name: 'factory_id' })
   factory: Factory;
+
+  @OneToMany(() => Registries, (registries) => registries.user)
+  registries: Registries;
 }

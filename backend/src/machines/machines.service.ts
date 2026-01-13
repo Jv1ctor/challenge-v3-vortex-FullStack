@@ -12,13 +12,15 @@ export class MachinesService {
   ) {}
 
   async getAllMachines(): Promise<MachineDto[]> {
-    return await this.machinesRepository.find({
+    const machines = await this.machinesRepository.find({
       select: {
         id: true,
         name: true,
         model: true,
         manufacturer: true,
         description: true,
+        createdAt: true,
+        updatedAt: true,
         factory: {
           id: true,
           name: true,
@@ -26,6 +28,10 @@ export class MachinesService {
       },
       relations: { factory: true },
     });
+
+    console.log(machines);
+
+    return machines;
   }
 
   async getMachine(id: number): Promise<MachineDto> {
