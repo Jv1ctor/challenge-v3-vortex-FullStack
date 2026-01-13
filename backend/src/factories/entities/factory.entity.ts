@@ -1,3 +1,4 @@
+import { Machine } from 'src/machines/entities/machine.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
@@ -20,4 +21,7 @@ export class Factory {
 
   @OneToMany(() => User, (user) => user.factory)
   users: User[];
+
+  @OneToMany(() => Machine, (machines) => machines.factory)
+  machines: Machine[]
 }

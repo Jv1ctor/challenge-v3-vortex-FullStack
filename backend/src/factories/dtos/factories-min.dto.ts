@@ -1,6 +1,4 @@
-
-
-export class FactoriesMinDto  {
-    id: number
-    name: string
+export class FactoriesMinDto {
+  id: number;
+  name: string;
 }

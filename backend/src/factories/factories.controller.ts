@@ -20,7 +20,11 @@ import {
 } from './dtos/register-user-req-dto';
 import { CreateFactoryResDto } from './dtos/create-factory-res.dto';
 import { ZodValidationPipe } from 'src/common/pipes/zod-validation.pipe';
-import { GetAllFactoriesMinDto } from './dtos/get-all-factories-min.dto';
+import { FactoriesMinDto } from './dtos/factories-min.dto';
+import {
+  type CreateMachineReqDto,
+  CreateMachineReqSchema,
+} from './dtos/create-machine-req.dto';
 
 @Controller('factories')
 export class FactoriesController {
@@ -46,16 +50,33 @@ export class FactoriesController {
   }
 
   @Get()
-  async getAllFactoriesMin(): Promise<GetAllFactoriesMinDto> {
+  async getAllFactoriesMin(): Promise<{ factories: FactoriesMinDto[] }> {
     return {
-      factories: await this.factoryService.getAllFactories()
-    }
+      factories: await this.factoryService.getAllFactories(),
+    };
   }
 
-  @Get(":id/user")
-  async getAllUsersByFactory( @Param('id', ParseIntPipe) factoryId: number) {
+  @Get(':id/user')
+  async getAllUsersByFactory(@Param('id', ParseIntPipe) factoryId: number) {
     return {
-      users: await this.factoryService.getAllUserByFactory(factoryId)
-    }
+      users: await this.factoryService.getAllUserByFactory(factoryId),
+    };
+  }
+
+  @Get(':id/machines')
+  async getAllMachinesByFactory(@Param('id', ParseIntPipe) factoryId: number) {
+    return {
+      machines: await this.factoryService.getAllMachinesByFactory(factoryId),
+    };
+  }
+
+  @Post(':id/machines')
+  @HttpCode(201)
+  async createMachine(
+    @Param('id', ParseIntPipe) factoryId: number,
+    @Body(new ZodValidationPipe(CreateMachineReqSchema))
+    body: CreateMachineReqDto,
+  ) {
+    await this.factoryService.insertMachine(factoryId, body);
   }
 }
