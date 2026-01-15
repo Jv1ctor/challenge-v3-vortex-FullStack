@@ -20,12 +20,22 @@ export class FactoriesService {
     private readonly machineRepository: Repository<Machine>,
   ) {}
 
-  async createFactory(name: string): Promise<CreateFactoryResDto> {
+  async createFactory(
+    name: string,
+    address?: string,
+    city?: string,
+    country?: string,
+  ): Promise<CreateFactoryResDto> {
     const existFactory = await this.factoryRepository.findOneBy({ name });
 
     if (existFactory) throw new BadRequestException('already exist factory');
 
-    const result = await this.factoryRepository.insert({ name });
+    const result = await this.factoryRepository.insert({
+      name,
+      address,
+      city,
+      country,
+    });
     return {
       id: result.generatedMaps[0].id,
     };
@@ -55,12 +65,29 @@ export class FactoriesService {
   }
 
   async getAllFactories(): Promise<FactoriesMinDto[]> {
-    return await this.factoryRepository.find({
+    const factories = await this.factoryRepository.find({
       select: {
         id: true,
         name: true,
+        city: true,
+        address: true,
+        country: true,
+      },
+      relations: {
+        users: true,
+        machines: true,
       },
     });
+
+    return factories.map((i) => ({
+      id: i.id,
+      name: i.name,
+      address: i.address,
+      city: i.city,
+      country: i.country,
+      count_machines: i.machines.length,
+      count_users: i.users.length,
+    }));
   }
 
   async getAllUserByFactory(factoryId: number): Promise<UsersByFactoryDto[]> {
