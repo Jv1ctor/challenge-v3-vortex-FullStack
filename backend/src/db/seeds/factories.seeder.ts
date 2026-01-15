@@ -7,9 +7,24 @@ export async function factoriesSeeder(datasource: DataSource): Promise<void> {
   const repository = datasource.getRepository(Factory);
 
   const factories = [
-    { name: 'Fábrica Norte' },
-    { name: 'Fábrica Sul' },
-    { name: 'Fábrica Leste' },
+    { 
+      name: 'Fábrica Norte',
+      address: 'Rua das Indústrias, 1250',
+      city: 'São Paulo',
+      country: 'Brasil'
+    },
+    { 
+      name: 'Fábrica Sul',
+      address: 'Avenida dos Estados, 3400',
+      city: 'Porto Alegre',
+      country: 'Brasil'
+    },
+    { 
+      name: 'Fábrica Leste',
+      address: 'Rodovia BR-101, Km 45',
+      city: 'Rio de Janeiro',
+      country: 'Brasil'
+    },
   ];
 
   await repository.insert(factories);
