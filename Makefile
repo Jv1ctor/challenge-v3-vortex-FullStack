@@ -21,3 +21,15 @@ logs:
 
 exec-seed:
 	docker compose --env-file ./backend/$(ENV) -f $(COMPOSE) exec api npm run seed
+
+
+# WEB - COMMANDS
+
+up-web:
+	docker compose -f $(COMPOSE) up -d web
+
+down-web:
+	docker compose -f $(COMPOSE) down web
+
+rebuild-web:
+	docker compose -f $(COMPOSE) up -d --build web
