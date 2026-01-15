@@ -2,8 +2,9 @@ import { createContext, useEffect, useState, type ReactNode } from "react"
 import { loginRequest } from "../services/auth.service"
 
 type AuthContextData = {
-  token: string | null
+  token: string | null | undefined
   isLoading: boolean
+  error: boolean,
   login: (username: string, password: string) => Promise<void>
   logout: () => Promise<void>
 }
@@ -16,7 +17,8 @@ type AuthProviderProps = {
 export const AuthContext = createContext<AuthContextData>({} as AuthContextData)
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [token, setToken] = useState<string | null>(null)
+  const [token, setToken] = useState<string | null>()
+  const [error, setError] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect( () => {
@@ -31,6 +33,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     
     if(!resultToken) {
       setIsLoading(false)
+      setError(true)
       console.error("REQUEST_FAILED")
       return
     }
@@ -48,6 +51,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   return (
     <AuthContext.Provider value={{ 
       token,
+      error,
       login,
       isLoading,
       logout
