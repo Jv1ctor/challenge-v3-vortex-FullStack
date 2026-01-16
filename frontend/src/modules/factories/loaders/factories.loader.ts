@@ -33,7 +33,10 @@ export const FactoriesLoader = {
     }
 
     try {
-      const data = await FactoriesService.getAllMachinesByFactories(token, Number(id))
+      const data = await FactoriesService.getAllMachinesByFactories(
+        token,
+        Number(id)
+      )
       return data || []
     } catch (error) {
       // Se 401/403 (token expirado), limpa e redireciona
@@ -44,6 +47,34 @@ export const FactoriesLoader = {
         localStorage.removeItem("token")
         return redirect("/login")
       }
+      return []
+    }
+  },
+  
+  async getUsersByFactories({ params }: LoaderFunctionArgs) {
+    const token = localStorage.getItem("token")
+    const { id } = params as { id: string }
+
+    if (!token) {
+      return redirect("/login")
+    }
+
+    try {
+      const data = await FactoriesService.getAllUsersByFactories(
+        token,
+        Number(id)
+      )
+      return data || []
+    } catch (error) {
+      // Se 401/403 (token expirado), limpa e redireciona
+      if (
+        error instanceof Response &&
+        (error.status === 401 || error.status === 403)
+      ) {
+        localStorage.removeItem("token")
+        return redirect("/login")
+      }
+      return []
     }
   },
 }

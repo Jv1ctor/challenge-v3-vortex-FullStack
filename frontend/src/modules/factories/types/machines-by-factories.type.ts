@@ -5,6 +5,9 @@ export type MachinesByFactory = {
   model: string | null
   manufacturer: string | null
   description: string | null
-  createdAt: string
-  updatedAt: string
+  total_registries: number
+  total_value: number
+  last_registry_at: string
+  created_at: string
+  updated_at: string
 }

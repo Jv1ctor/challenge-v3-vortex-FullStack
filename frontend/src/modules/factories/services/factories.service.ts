@@ -1,6 +1,7 @@
 import { formatDate } from "@/lib/formatted-date"
 import type { Factories } from "../types/factories.type"
 import type { MachinesByFactory } from "../types/machines-by-factories.type"
+import type { UsersByFactories } from "../types/users-by-factories.type"
 
 type ResponseApiGetAllFactories = {
   data: Factories[]
@@ -8,6 +9,10 @@ type ResponseApiGetAllFactories = {
 
 type ResponseApiGetMachinesByFactories = {
   data: MachinesByFactory[]
+}
+
+type ResponseApiGetUsersByFactories = {
+  data: UsersByFactories[]
 }
 
 export const FactoriesService = {
@@ -55,10 +60,41 @@ export const FactoriesService = {
 
     const formatted = result.data.map((it) => ({
       ...it,
-      createdAt: formatDate(it.createdAt),
-      updatedAt: formatDate(it.updatedAt),
+      created_at: formatDate(it.created_at),
+      updated_at: formatDate(it.updated_at),
+      last_registry_at: formatDate(it.last_registry_at),
+      total_registries: it.total_registries,
+      total_value: it.total_value,
     }))
 
     return formatted
   },
+
+  async getAllUsersByFactories(token: string, factoryId: number): Promise<UsersByFactories[]>{
+    const response = await fetch(
+      `http://localhost:4000/api/factories/${factoryId}/user`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
+      }
+    )
+
+    if (!response.ok) {
+      console.log(`RESPONSE STATUS: ${response.status}`)
+      throw response
+    }
+
+    const result: ResponseApiGetUsersByFactories = await response.json()
+
+    const formatted = result.data.map((it) => ({
+      ...it,
+      last_registry_at: formatDate(it.last_registry_at)
+    }))
+
+    return formatted
+  }
 }

@@ -12,7 +12,6 @@ import type { Factories } from "./types/factories.type"
 
 export const TableFactories = () => {
   const data = useLoaderData() as Factories[]
-  console.log(data)
   return (
     <>
       <TableData
@@ -72,13 +71,15 @@ export const TableFactories = () => {
 
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="bg-muted text-muted-foreground cursor-pointer hover:bg-primary hover:text-primary-foreground"
-                    >
-                      <Users />
-                    </Button>
+                    <NavLink to={`${it.id}/users`} end>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="bg-muted text-muted-foreground cursor-pointer hover:bg-primary hover:text-primary-foreground"
+                      >
+                        <Users />
+                      </Button>
+                    </NavLink>
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>Visualizar Usuarios da Fabrica</p>

@@ -12,7 +12,7 @@ export const TableMachineByFactory = () => {
   return (
     <>
       <TableData
-        title="Listagem das Maquinas na Fabrica 01"
+        title={"Listagem das Maquinas na {FABRICA}"}
         buttonLabel="Cadastrar Maquina"
         tableCaption="Listagem das Unidades"
         tableRowHeader={
@@ -30,6 +30,12 @@ export const TableMachineByFactory = () => {
               <TableHead className="text-center text-muted-foreground uppercase">
                 Quantidade de Registros
               </TableHead>
+              <TableHead className="text-center text-muted-foreground uppercase">
+                Total de kWh
+              </TableHead>
+              <TableHead className="text-center text-muted-foreground uppercase">
+                Ultimo Registro
+              </TableHead>
               <TableHead className="text-muted-foreground uppercase">
                 Criado em
               </TableHead>
@@ -44,8 +50,10 @@ export const TableMachineByFactory = () => {
             <TableCell>{it.name}</TableCell>
             <TableCell>{it.model || ""}</TableCell>
             <TableCell>{it.manufacturer || ""}</TableCell>
-            <TableCell className="text-center">{""}</TableCell>
-            <TableCell>{it.createdAt}</TableCell>
+            <TableCell className="text-center">{ it.total_registries }</TableCell>
+            <TableCell className="text-center">{ it.total_value.toFixed(2)}</TableCell>
+            <TableCell className="text-center">{ it.last_registry_at }</TableCell>
+            <TableCell>{it.created_at}</TableCell>
             <TableCell>
               <div className="flex gap-5 justify-end">
                 <Tooltip>
