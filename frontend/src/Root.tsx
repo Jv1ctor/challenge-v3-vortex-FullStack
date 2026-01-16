@@ -19,7 +19,7 @@ export const Root = () => {
         <AppSidebar variant="inset" />
         <SidebarInset>
           <HeaderRoot title={title} />
-          <main className="container p-5">
+          <main className="container mx-auto p-5">
             <Outlet />
           </main>
         </SidebarInset>
