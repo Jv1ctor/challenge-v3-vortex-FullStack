@@ -36,7 +36,12 @@ export class FactoriesController {
   async createFactory(
     @Body() body: CreateFactoryReqDto,
   ): Promise<CreateFactoryResDto> {
-    return await this.factoryService.createFactory(body.name, body.address, body.city, body.country);
+    return await this.factoryService.createFactory(
+      body.name,
+      body.address,
+      body.city,
+      body.country,
+    );
   }
 
   @Patch(':id/user')
@@ -50,23 +55,22 @@ export class FactoriesController {
   }
 
   @Get()
-  async getAllFactoriesMin(): Promise<{ factories: FactoriesMinDto[] }> {
+  async getAllFactoriesMin(): Promise<{ data: FactoriesMinDto[] }> {
     return {
-      factories: await this.factoryService.getAllFactories(),
+      data: await this.factoryService.getAllFactories(),
     };
   }
-
   @Get(':id/user')
   async getAllUsersByFactory(@Param('id', ParseIntPipe) factoryId: number) {
     return {
-      users: await this.factoryService.getAllUserByFactory(factoryId),
+      data: await this.factoryService.getAllUserByFactory(factoryId),
     };
   }
 
   @Get(':id/machines')
   async getAllMachinesByFactory(@Param('id', ParseIntPipe) factoryId: number) {
     return {
-      machines: await this.factoryService.getAllMachinesByFactory(factoryId),
+      data: await this.factoryService.getAllMachinesByFactory(factoryId),
     };
   }
 

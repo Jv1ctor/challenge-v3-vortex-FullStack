@@ -13,14 +13,14 @@ export class DashboardController {
   ) {
     switch(group){
       case "machine":
-        return await this.DashboardService.getKwhByMachines()
+        return { data: await this.DashboardService.getKwhByMachines() } 
 
       case "factory":
-        return await this.DashboardService.getKwhByFactories()
+        return { data: await this.DashboardService.getKwhByFactories() }
 
       case "month":
       default:
-        return await this.DashboardService.getKwhByMonth()
+        return { data: await this.DashboardService.getKwhByMonth() } 
     }
   }
 }

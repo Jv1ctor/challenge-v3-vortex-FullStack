@@ -91,31 +91,46 @@ export class FactoriesService {
   }
 
   async getAllUserByFactory(factoryId: number): Promise<UsersByFactoryDto[]> {
-    return await this.userRepository.find({
-      select: { name: true },
-      where: { factory: { id: factoryId } },
-    });
+    return await this.userRepository
+      .createQueryBuilder('users')
+      .innerJoin('registries', 'r', ' r.user_id = users.id')
+      .innerJoin('machines', 'm', 'm.id = r.machine_id')
+      .select(['users.id AS id', 'users.name AS name'])
+      .addSelect('COUNT(r.id)', 'total_registries')
+      .addSelect('MAX(r.created_at)', 'last_registry_at')
+      .where('m.factory_id = :factoryId', { factoryId })
+      .groupBy('users.id')
+      .addGroupBy('users.name')
+      .getRawMany<UsersByFactoryDto>();
   }
 
   async getAllMachinesByFactory(
     factoryId: number,
   ): Promise<GetMachinesByFactoryDto[]> {
-    return await this.machineRepository.find({
-      where: {
-        factory: {
-          id: factoryId,
-        },
-      },
-      select: {
-        id: true,
-        name: true,
-        model: true,
-        manufacturer: true,
-        description: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
+    return await this.machineRepository
+      .createQueryBuilder('machine')
+      .leftJoin('machine.registries', 'registry')
+      .select([
+        'machine.id AS id',
+        'machine.name AS name',
+        'machine.model AS model',
+        'machine.manufacturer AS manufacturer',
+        'machine.description AS description',
+        'machine.created_at',
+        'machine.updated_at',
+      ])
+      .addSelect('COUNT(registry.id)', 'total_registries')
+      .addSelect('COALESCE(SUM(registry.value), 0)', 'total_value')
+      .addSelect('MAX(registry.created_at)', 'last_registry_at')
+      .where('machine.factory_id = :factoryId', { factoryId })
+      .groupBy('machine.id')
+      .addGroupBy('machine.name')
+      .addGroupBy('machine.model')
+      .addGroupBy('machine.manufacturer')
+      .addGroupBy('machine.description')
+      .addGroupBy('machine.created_at')
+      .addGroupBy('machine.updated_at')
+      .getRawMany<GetMachinesByFactoryDto>();
   }
 
   async insertMachine(
