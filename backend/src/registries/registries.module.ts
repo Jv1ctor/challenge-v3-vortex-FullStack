@@ -4,9 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Registries } from './entities/registries.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Machine } from 'src/machines/entities/machine.entity';
+import { Factory } from 'src/factories/entities/factory.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Registries, User, Machine])],
+  imports: [TypeOrmModule.forFeature([Registries, User, Machine, Factory])],
   exports: [RegistriesService],
   providers: [RegistriesService],
 })

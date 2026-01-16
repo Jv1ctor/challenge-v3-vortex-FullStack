@@ -96,7 +96,7 @@ export class FactoriesService {
       .innerJoin('registries', 'r', ' r.user_id = users.id')
       .innerJoin('machines', 'm', 'm.id = r.machine_id')
       .select(['users.id AS id', 'users.name AS name'])
-      .addSelect('COUNT(r.id)', 'total_registries')
+      .addSelect('COUNT(r.id)::int', 'total_registries')
       .addSelect('MAX(r.created_at)', 'last_registry_at')
       .where('m.factory_id = :factoryId', { factoryId })
       .groupBy('users.id')
@@ -119,8 +119,8 @@ export class FactoriesService {
         'machine.created_at',
         'machine.updated_at',
       ])
-      .addSelect('COUNT(registry.id)', 'total_registries')
-      .addSelect('COALESCE(SUM(registry.value), 0)', 'total_value')
+      .addSelect('COUNT(registry.id)::int', 'total_registries')
+      .addSelect('COALESCE(SUM(registry.value), 0)::float', 'total_value')
       .addSelect('MAX(registry.created_at)', 'last_registry_at')
       .where('machine.factory_id = :factoryId', { factoryId })
       .groupBy('machine.id')

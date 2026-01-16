@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Machine } from 'src/machines/entities/machine.entity';
 import { User } from 'src/users/entities/user.entity';
 import { RegistriesDto } from './dtos/registries.dto';
+import { Factory } from 'src/factories/entities/factory.entity';
 
 @Injectable()
 export class RegistriesService {
@@ -15,18 +16,29 @@ export class RegistriesService {
     private readonly machineRepository: Repository<Machine>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Factory)
+    private readonly factoryRepository: Repository<Factory>,
   ) {}
 
   async insertRegistry(machineId: number, userId: string, value: number) {
-    const existMachine = await this.machineRepository.findOneBy({
-      id: machineId,
+    const existMachine = await this.machineRepository.findOne({
+      where: { id: machineId },
+      relations: { factory: true },
     });
 
     if (!existMachine) throw new BadRequestException('not found machine');
 
-    const existUser = await this.userRepository.findOneBy({ id: userId });
+    const existUserInFactory = await this.factoryRepository.findOne({
+      where: {
+        id: existMachine.factory.id,
+        users: {
+          id: userId,
+        },
+      },
+    });
 
-    if (!existUser) throw new BadRequestException('not found user');
+    if (!existUserInFactory)
+      throw new BadRequestException('not found user in factory');
 
     await this.registryRepository.insert({
       machine: {
