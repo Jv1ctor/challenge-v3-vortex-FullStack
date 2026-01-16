@@ -1,9 +1,14 @@
 import type { ReactNode } from "react"
 import { Button } from "@/components/ui/button"
-import { Table, TableBody, TableCaption, TableHeader } from "@/components/ui/table"
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableHeader,
+} from "@/components/ui/table"
 type Props = {
   title: string
-  buttonLabel: string
+  buttonLabel?: string
   tableCaption: string
   tableRowHeader: ReactNode
   tableRowBody: ReactNode
@@ -23,7 +28,9 @@ export const TableData = ({
           <h2 className="text-lg font-semibold text-secondary-foreground">
             {title}
           </h2>
-          <Button className="text-base cursor-pointer">{buttonLabel}</Button>
+          {buttonLabel && (
+            <Button className="text-base cursor-pointer">{buttonLabel}</Button>
+          )}
         </div>
 
         <Table className="border-2">
