@@ -16,6 +16,15 @@ export class Factory {
   @Column('varchar', { nullable: true, length: 225, unique: true })
   name: string;
 
+  @Column('varchar', { nullable: true })
+  address: string
+
+  @Column('varchar', { nullable: true })
+  city: string
+
+  @Column('varchar', { nullable: true })
+  country: string
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

@@ -3,6 +3,7 @@ import LoginPage from "./pages/LoginPage"
 import { authMiddleware } from "./middleware/auth.middleware"
 import { DashboardPage } from "./pages/DashboardPage"
 import { Root } from "./Root"
+import { FactoryPage } from "./pages/FactoryPage"
 
 export const router = createBrowserRouter([
   {
@@ -13,6 +14,9 @@ export const router = createBrowserRouter([
     path: "/",
     middleware: [authMiddleware],
     element: <Root />,
-    children: [{ index: true, element: <DashboardPage/> }],
+    children: [
+      { index: true, handle: { title: "Painel" }, element: <DashboardPage /> },
+      { path: "factory", handle: { title: "Fabricas" }, element: <FactoryPage /> },
+    ],
   },
 ])

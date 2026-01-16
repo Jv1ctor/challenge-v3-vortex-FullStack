@@ -36,7 +36,7 @@ export class FactoriesController {
   async createFactory(
     @Body() body: CreateFactoryReqDto,
   ): Promise<CreateFactoryResDto> {
-    return await this.factoryService.createFactory(body.name);
+    return await this.factoryService.createFactory(body.name, body.address, body.city, body.country);
   }
 
   @Patch(':id/user')
