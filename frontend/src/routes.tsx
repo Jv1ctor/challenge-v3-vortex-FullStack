@@ -8,6 +8,7 @@ import { MachineByFactoryPage } from "./pages/factory/MachineByFactoryPage"
 import { FactoriesLoader } from "./modules/factories/loaders/factories.loader"
 import { RegistriesByMachinePage } from "./pages/machine/RegistriesByMachinePage"
 import { MachineLoader } from "./modules/machines/loaders/machine.loader"
+import { UserByFactoryPage } from "./pages/factory/UserByFactoryPage"
 
 export const router = createBrowserRouter([
   {
@@ -33,11 +34,17 @@ export const router = createBrowserRouter([
         element: <MachineByFactoryPage />,
       },
       {
+        path: "factory/:id/users",
+        handle: { title: "Operadores" },
+        loader: FactoriesLoader.getUsersByFactories,
+        element: <UserByFactoryPage />,
+      },
+      {
         path: "machines/:id/registries",
         handle: { title: "Registros" },
         loader: MachineLoader.getRegistriesByMachine,
-        element: <RegistriesByMachinePage/>
-      }
+        element: <RegistriesByMachinePage />,
+      },
     ],
   },
 ])

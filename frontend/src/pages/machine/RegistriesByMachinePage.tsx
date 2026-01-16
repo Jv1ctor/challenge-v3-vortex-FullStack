@@ -1,7 +1,14 @@
 import { TableRegistriesByMachine } from "@/modules/machines/TableRegistriesByMachine"
+import { useLoaderData } from "react-router"
+
 
 export const RegistriesByMachinePage = () => {
-  return (<>
-  <TableRegistriesByMachine/>
-  </>)
+  const data = useLoaderData()
+
+  console.log(data)
+  return (
+    <>
+      <TableRegistriesByMachine />
+    </>
+  )
 }
