@@ -25,9 +25,10 @@ export const MachineService = {
     }
 
     const result: ResponseApiGetRegistriesByMachine = await response.json()
+  
     return result.data.map((it) => ({
       ...it,
-      create_at: formatDate(it.create_at),
+      createdAt: formatDate(it.createdAt),
     }))
   },
 }

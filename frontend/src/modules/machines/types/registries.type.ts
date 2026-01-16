@@ -1,7 +1,7 @@
 export type Registries = {
   id: number
   value: number
-  create_at: string
+  createdAt: string
   user: {
     id: string
     name: string

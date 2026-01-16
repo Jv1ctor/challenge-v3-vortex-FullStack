@@ -12,7 +12,7 @@ export const TableRegistriesByMachine = () => {
   return (
     <>
       <TableData
-        title="Listagem de Registros da Maquina 01"
+        title="Listagem de Registros da {MAQUINA}"
         tableCaption="Listagem dos Registros"
         tableRowHeader={
           <TableRow>
@@ -23,7 +23,7 @@ export const TableRegistriesByMachine = () => {
               Data de Registro
             </TableHead>
             <TableHead className="text-center text-muted-foreground uppercase">
-              Usuario
+              Inserido por
             </TableHead>
             <TableHead className="p-5 text-muted-foreground text-right uppercase">
               Ações
@@ -32,9 +32,9 @@ export const TableRegistriesByMachine = () => {
         }
         tableRowBody={data.map((it) => (
           <TableRow key={it.id}>
-            <TableCell>{it.value}kWh</TableCell>
+            <TableCell>{it.value.toFixed(2)} kWh</TableCell>
             <TableCell>
-              {it.create_at}
+              {it.createdAt}
             </TableCell>
             <TableCell className="text-center">{it.user.name}</TableCell>
             <TableCell>
