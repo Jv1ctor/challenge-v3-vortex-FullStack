@@ -6,6 +6,8 @@ import { Root } from "./Root"
 import { FactoryPage } from "./pages/factory/FactoryPage"
 import { MachineByFactoryPage } from "./pages/factory/MachineByFactoryPage"
 import { FactoriesLoader } from "./modules/factories/loaders/factories.loader"
+import { RegistriesByMachinePage } from "./pages/machine/RegistriesByMachinePage"
+import { MachineLoader } from "./modules/machines/loaders/machine.loader"
 
 export const router = createBrowserRouter([
   {
@@ -30,6 +32,12 @@ export const router = createBrowserRouter([
         loader: FactoriesLoader.getMachinesByFactories,
         element: <MachineByFactoryPage />,
       },
+      {
+        path: "machines/:id/registries",
+        handle: { title: "Registros" },
+        loader: MachineLoader.getRegistriesByMachine,
+        element: <RegistriesByMachinePage/>
+      }
     ],
   },
 ])
