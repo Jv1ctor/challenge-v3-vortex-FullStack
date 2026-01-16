@@ -4,7 +4,7 @@ import { TableCell, TableHead, TableRow } from "@/components/ui/table"
 import { Tooltip } from "@/components/ui/tooltip"
 import { TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { NotebookPen, SquarePen } from "lucide-react"
-import { useLoaderData } from "react-router"
+import { NavLink, useLoaderData } from "react-router"
 import type { MachinesByFactory } from "./types/machines-by-factories.type"
 
 export const TableMachineByFactory = () => {
@@ -50,13 +50,15 @@ export const TableMachineByFactory = () => {
               <div className="flex gap-5 justify-end">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="bg-muted text-muted-foreground cursor-pointer hover:bg-primary hover:text-primary-foreground"
-                    >
-                      <NotebookPen />
-                    </Button>
+                    <NavLink to={`/machines/${it.id}/registries`} end>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="bg-muted text-muted-foreground cursor-pointer hover:bg-primary hover:text-primary-foreground"
+                      >
+                        <NotebookPen />
+                      </Button>
+                    </NavLink>
                   </TooltipTrigger>
 
                   <TooltipContent>
