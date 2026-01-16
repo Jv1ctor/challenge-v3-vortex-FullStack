@@ -25,8 +25,8 @@ export class MachinesController {
   ) {}
 
   @Get()
-  async getAllMachines(): Promise<{ machines: MachineDto[] }> {
-    return { machines: await this.machineService.getAllMachines() };
+  async getAllMachines(): Promise<{ data: MachineDto[] }> {
+    return { data: await this.machineService.getAllMachines() };
   }
 
   @Get(':id')
@@ -39,9 +39,9 @@ export class MachinesController {
   @Get(':id/registries')
   async getAllRegistriesByMachine(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<{ registries: RegistriesByMachineDto[] }> {
+  ): Promise<{ data: RegistriesByMachineDto[] }> {
     return {
-      registries: await this.registriesService.getAllRegistriesByMachine(id),
+      data: await this.registriesService.getAllRegistriesByMachine(id),
     };
   }
 
