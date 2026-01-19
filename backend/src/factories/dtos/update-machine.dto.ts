@@ -20,7 +20,7 @@ export const UpdatedMachineSchema = z.object({
     .regex(SAFE_TEXT, 'invalid character')
     .optional(),
 
-  manufacture: z
+  manufacturer: z
     .string()
     .trim()
     .min(2)
@@ -31,10 +31,7 @@ export const UpdatedMachineSchema = z.object({
   description: z
     .string()
     .trim()
-    .min(3)
     .max(300)
-    // descrição pode ser um pouco mais livre
-    .regex(/^[A-Za-zÀ-ÖØ-öø-ÿ0-9\s\-\.,()\/]+$/, 'invalid character')
     .optional(),
 });
 
