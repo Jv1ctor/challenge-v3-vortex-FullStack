@@ -41,6 +41,14 @@ export class FactoriesService {
     };
   }
 
+  async getFactoryInfo(factoryId: number) {
+    const factory = await this.factoryRepository.findOneBy({ id: factoryId });
+
+    if (!factory) throw new BadRequestException('not found factory');
+
+    return factory;
+  }
+
   async registerUser(factoryId: number, userId: string) {
     const factory = await this.factoryRepository.findOneBy({ id: factoryId });
 
