@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import type { Dispatch, ReactNode, SetStateAction } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Table,
@@ -6,12 +6,18 @@ import {
   TableCaption,
   TableHeader,
 } from "@/components/ui/table"
+import { Sheet, SheetTrigger } from "@/components/ui/sheet"
+
 type Props = {
   title: string
   buttonLabel?: string
   tableCaption: string
   tableRowHeader: ReactNode
   tableRowBody: ReactNode
+  sheetContent: ReactNode
+  setForms: () => void
+  openSheet: boolean
+  onOpenSheet: Dispatch<SetStateAction<boolean>>
 }
 
 export const TableData = ({
@@ -20,24 +26,35 @@ export const TableData = ({
   tableCaption,
   tableRowHeader,
   tableRowBody,
+  sheetContent,
+  setForms,
+  onOpenSheet,
+  openSheet
 }: Props) => {
   return (
     <>
       <div className="">
-        <div className="flex items-center justify-between bg-primary-foreground border-t-2 border-x-2 py-5 px-6 rounded-t-4xl">
-          <h2 className="text-lg font-semibold text-secondary-foreground">
-            {title}
-          </h2>
-          {buttonLabel && (
-            <Button className="text-base cursor-pointer">{buttonLabel}</Button>
-          )}
-        </div>
+        <Sheet open={openSheet} onOpenChange={onOpenSheet}>
+          <div className="flex items-center justify-between bg-primary-foreground border-t-2 border-x-2 py-5 px-6 rounded-t-4xl">
+            <h2 className="text-lg font-semibold text-secondary-foreground">
+              {title}
+            </h2>
+            {buttonLabel && (
+              <SheetTrigger asChild>
+                <Button onClick={setForms} className="text-base cursor-pointer">
+                  {buttonLabel}
+                </Button>
+              </SheetTrigger>
+            )}
+          </div>
+          {sheetContent}
 
-        <Table className="border-2">
-          <TableCaption>{tableCaption}</TableCaption>
-          <TableHeader>{tableRowHeader}</TableHeader>
-          <TableBody>{tableRowBody}</TableBody>
-        </Table>
+          <Table className="border-2">
+            <TableCaption>{tableCaption}</TableCaption>
+            <TableHeader>{tableRowHeader}</TableHeader>
+            <TableBody>{tableRowBody}</TableBody>
+          </Table>
+        </Sheet>
       </div>
     </>
   )
