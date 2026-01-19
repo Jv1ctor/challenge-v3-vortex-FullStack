@@ -1,6 +1,6 @@
 import z from 'zod';
 
-export const CreateFactoryReqSchema = z.object({
+export const UpdateFactorySchema = z.object({
   name: z
     .string()
     .max(225)
@@ -30,4 +30,4 @@ export const CreateFactoryReqSchema = z.object({
     .optional(),
 });
 
-export type CreateFactoryReqDto = z.infer<typeof CreateFactoryReqSchema>;
+export type UpdateFactoryDto = z.infer<typeof UpdateFactorySchema>;

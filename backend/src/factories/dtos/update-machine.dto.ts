@@ -1,7 +1,8 @@
 import z from 'zod';
 
 const SAFE_TEXT = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9\s\-\.,()]+$/;
-export const CreateMachineReqSchema = z.object({
+
+export const UpdatedMachineSchema = z.object({
   name: z
     .string()
     .trim()
@@ -37,4 +38,4 @@ export const CreateMachineReqSchema = z.object({
     .optional(),
 });
 
-export type CreateMachineReqDto = z.infer<typeof CreateMachineReqSchema>;
+export type UpdatedMachineDto = z.infer<typeof UpdatedMachineSchema>;
