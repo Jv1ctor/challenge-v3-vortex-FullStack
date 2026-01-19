@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { Factory } from './entities/factory.entity';
 import { User } from 'src/users/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,6 +8,8 @@ import { FactoriesMinDto } from './dtos/factories-min.dto';
 import { UsersByFactoryDto } from './dtos/users-by-factory.dto';
 import { Machine } from 'src/machines/entities/machine.entity';
 import { GetMachinesByFactoryDto } from './dtos/get-machines-by-factory.dto';
+import { UpdateFactoryDto } from './dtos/update-factory.dto';
+import { UpdatedMachineDto } from './dtos/update-machine.dto';
 
 @Injectable()
 export class FactoriesService {
@@ -47,6 +49,20 @@ export class FactoriesService {
     if (!factory) throw new BadRequestException('not found factory');
 
     return factory;
+  }
+
+  async updateFactory(factoryId: number, factory: UpdateFactoryDto) {
+    const existNameFactory = await this.factoryRepository.find({
+      where: {
+        name: factory.name,
+        id: Not(factoryId),
+      },
+    });
+
+    if (existNameFactory.length > 0)
+      throw new BadRequestException(`"${factory.name}" already used`);
+
+    await this.factoryRepository.update({ id: factoryId }, { ...factory });
   }
 
   async registerUser(factoryId: number, userId: string) {
@@ -165,5 +181,42 @@ export class FactoriesService {
       ...machine,
       factory: { id: factoryId },
     });
+  }
+
+  async updateMachine(
+    factoryId: number, // 2
+    machineId: number, // 1
+    machine: UpdatedMachineDto,
+  ) {
+    const existMachine = await this.machineRepository.find({
+      where: {
+        factory: {
+          id: factoryId,
+        },
+        id: Not(machineId),
+        name: machine.name,
+      },
+      relations: {
+        factory: true,
+      },
+    });
+
+    const existMachineInFactory = await this.machineRepository.findOne({
+      where: {
+        factory: { id: factoryId },
+        id: machineId,
+      },
+    });
+
+    if (!existMachineInFactory) {
+      throw new BadRequestException(`not found this machine in factory`);
+    }
+
+    if (existMachine.length > 0)
+      throw new BadRequestException(
+        `"${machine.name}" already used in "${existMachine[0].factory.name}"`,
+      );
+
+    await this.machineRepository.update({ id: machineId }, { ...machine });
   }
 }

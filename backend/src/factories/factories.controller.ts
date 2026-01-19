@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Put,
 } from '@nestjs/common';
 import { FactoriesService } from './factories.service';
 import { ZodValidation } from 'src/common/decorators/zod-validation.decorator';
@@ -30,6 +31,15 @@ import { Role } from 'src/common/enums/role.enum';
 import { FactoryAccess } from 'src/common/decorators/factory-access.decorator';
 import { PlatformSelect } from 'src/common/decorators/platform.decorator';
 import { Platform } from 'src/common/enums/platform.enum';
+import { GetFactoryInfoDto } from './dtos/get-factory-info.dto';
+import {
+  type UpdateFactoryDto,
+  UpdateFactorySchema,
+} from './dtos/update-factory.dto';
+import {
+  type UpdatedMachineDto,
+  UpdatedMachineSchema,
+} from './dtos/update-machine.dto';
 
 @Controller('factories')
 export class FactoriesController {
@@ -49,6 +59,31 @@ export class FactoriesController {
       body.city,
       body.country,
     );
+  }
+
+  @Get(':id')
+  async getFactoryInfo(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<GetFactoryInfoDto> {
+    const result = await this.factoryService.getFactoryInfo(id);
+
+    return {
+      id: result.id,
+      name: result.name,
+      address: result.address,
+      city: result.city,
+      country: result.country,
+    };
+  }
+
+  @Put(':id')
+  @Roles(Role.Admin)
+  @HttpCode(204)
+  async updateFactory(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(new ZodValidationPipe(UpdateFactorySchema)) body: UpdateFactoryDto,
+  ) {
+    await this.factoryService.updateFactory(id, body);
   }
 
   @Patch(':id/user')
@@ -80,7 +115,7 @@ export class FactoriesController {
     return {
       id: factory.id,
       name: factory.name,
-      created_at: factory.createdAt,
+      created_at: factory,
       data: await this.factoryService.getAllUserByFactory(factoryId),
     };
   }
@@ -107,5 +142,16 @@ export class FactoriesController {
     body: CreateMachineReqDto,
   ) {
     await this.factoryService.insertMachine(factoryId, body);
+  }
+
+  @Put(':factoryId/machines/:machineId')
+  @Roles(Role.Admin)
+  @HttpCode(204)
+  async updateMachine(
+    @Param('factoryId', ParseIntPipe) factoryId: number,
+    @Param('machineId', ParseIntPipe) machineId: number,
+    @Body(new ZodValidationPipe(UpdatedMachineSchema)) body: UpdatedMachineDto,
+  ) {
+    await this.factoryService.updateMachine(factoryId, machineId, body);
   }
 }
