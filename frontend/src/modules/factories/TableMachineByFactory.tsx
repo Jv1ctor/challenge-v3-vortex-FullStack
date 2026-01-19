@@ -6,15 +6,66 @@ import { TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { NotebookPen, SquarePen } from "lucide-react"
 import { NavLink, useLoaderData } from "react-router"
 import type { MachinesByFactory } from "./types/machines-by-factories.type"
+import { FormMachine } from "./forms/FormMachine"
+import type { MachineFormData } from "./schemas/machine.schema"
+import { FormSheet } from "@/components/sheet/FormSheet"
+import { useHandleFormTable } from "@/hooks/handle-form-table.hooks"
+import { SheetTrigger } from "@/components/ui/sheet"
 
 export const TableMachineByFactory = () => {
   const data = useLoaderData() as MachinesByFactory[]
+
+  const {
+    activeForm,
+    closeForm,
+    open,
+    setOpen,
+    openCreateForm,
+    openEditForm,
+    selectedData,
+  } = useHandleFormTable<MachineFormData>()
+
+  const handleSubmit = async (formData: MachineFormData) => {
+    console.log("Machine data:", formData)
+  }
+
+  const handleEditSubmit = async (formData: MachineFormData) => {
+    console.log("Machine data edit:", formData)
+  }
+
   return (
     <>
       <TableData
+        openSheet={open}
+        onOpenSheet={setOpen}
+        setForms={() => openCreateForm()}
         title={"Listagem das Maquinas na {FABRICA}"}
         buttonLabel="Cadastrar Maquina"
         tableCaption="Listagem das Unidades"
+        sheetContent={
+          activeForm === "create" ? (
+            <FormSheet
+              formRef="machine-form"
+              formContent={<FormMachine onSubmit={handleSubmit} />}
+              buttonContent="Cadastrar Máquina"
+              title="Nova Máquina"
+              description="Preencha os dados para cadastrar uma nova máquina"
+            />
+          ) : activeForm === "edit" ? (
+            <FormSheet
+              formRef="machine-form"
+              formContent={
+                <FormMachine
+                  onSubmit={handleEditSubmit}
+                  initialData={selectedData}
+                />
+              }
+              buttonContent="Editar"
+              title="Editar Máquina"
+              description="Preencha os dados para editar a máquina escolhida"
+            />
+          ) : null
+        }
         tableRowHeader={
           <>
             <TableRow>
@@ -50,9 +101,11 @@ export const TableMachineByFactory = () => {
             <TableCell>{it.name}</TableCell>
             <TableCell>{it.model || ""}</TableCell>
             <TableCell>{it.manufacturer || ""}</TableCell>
-            <TableCell className="text-center">{ it.total_registries }</TableCell>
-            <TableCell className="text-center">{ it.total_value.toFixed(2)}</TableCell>
-            <TableCell className="text-center">{ it.last_registry_at }</TableCell>
+            <TableCell className="text-center">{it.total_registries}</TableCell>
+            <TableCell className="text-center">
+              {it.total_value.toFixed(2)}
+            </TableCell>
+            <TableCell className="text-center">{it.last_registry_at}</TableCell>
             <TableCell>{it.created_at}</TableCell>
             <TableCell>
               <div className="flex gap-5 justify-end">
@@ -76,13 +129,23 @@ export const TableMachineByFactory = () => {
 
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="bg-muted text-muted-foreground cursor-pointer hover:bg-primary hover:text-primary-foreground"
-                    >
-                      <SquarePen />
-                    </Button>
+                    <SheetTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() =>
+                          openEditForm({
+                            name: it.name,
+                            description: it.description ?? "",
+                            manufacturer: it.manufacturer ?? "",
+                            model: it.model ?? "",
+                          })
+                        }
+                        className="bg-muted text-muted-foreground cursor-pointer hover:bg-primary hover:text-primary-foreground"
+                      >
+                        <SquarePen />
+                      </Button>
+                    </SheetTrigger>
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>Editar Maquina</p>

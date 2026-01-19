@@ -7,17 +7,78 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Cog, SquarePen, Users } from "lucide-react"
-import { NavLink, useLoaderData } from "react-router"
+import { NavLink, useLoaderData, useNavigate } from "react-router"
 import type { Factories } from "./types/factories.type"
+import { FormFactory } from "./forms/FormFactory"
+import type { FactoryFormData } from "./schemas/factory.schema"
+import { FormSheet } from "@/components/sheet/FormSheet"
+import { SheetTrigger } from "@/components/ui/sheet"
+import { useHandleFormTable } from "@/hooks/handle-form-table.hooks"
+import { FactoriesService } from "./services/factories.service"
+import { useAuth } from "../auth/hooks/auth.hook"
 
 export const TableFactories = () => {
   const data = useLoaderData() as Factories[]
+  const navigator = useNavigate()
+  const { token } = useAuth()
+  const {
+    activeForm,
+    closeForm,
+    setOpen,
+    open,
+    openCreateForm,
+    openEditForm,
+    selectedData,
+  } = useHandleFormTable<FactoryFormData>()
+  const handleSubmit = async (formData: FactoryFormData) => {
+    // TODO: mensagem informando que aconteceu algum erro ou redirect para login.
+    if (!token) return
+    const result = await FactoriesService.createFactory(token, formData)
+
+    if (result) {
+      navigator("/factory")
+      closeForm()
+    }
+  }
+
+  const handleEditSubmit = async (formData: FactoryFormData) => {
+    console.log("Factory data edit:", formData)
+    // closeForm()
+  }
+
   return (
     <>
       <TableData
+        openSheet={open}
+        onOpenSheet={setOpen}
         title="Listagem das Unidades"
         buttonLabel="Cadastrar Fabrica"
+        setForms={() => openCreateForm()}
         tableCaption="Listagem das Unidades"
+        sheetContent={
+          activeForm === "create" ? (
+            <FormSheet
+              formRef="factory-form"
+              formContent={<FormFactory onSubmit={handleSubmit} />}
+              buttonContent="Cadastrar Fábrica"
+              title="Nova Fábrica"
+              description="Preencha os dados para cadastrar uma nova fábrica"
+            />
+          ) : activeForm == "edit" ? (
+            <FormSheet
+              formRef="factory-form"
+              formContent={
+                <FormFactory
+                  onSubmit={handleEditSubmit}
+                  initialData={selectedData}
+                />
+              }
+              buttonContent="editar Fábrica"
+              title="Editar Fabrica"
+              description="Preencha os dados para editar a fábrica"
+            />
+          ) : null
+        }
         tableRowHeader={
           <TableRow>
             <TableHead className="text-muted-foreground uppercase">
@@ -88,13 +149,23 @@ export const TableFactories = () => {
 
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="bg-muted text-muted-foreground cursor-pointer hover:bg-primary hover:text-primary-foreground"
-                    >
-                      <SquarePen />
-                    </Button>
+                    <SheetTrigger asChild>
+                      <Button
+                        onClick={() =>
+                          openEditForm({
+                            address: it.address ?? "",
+                            city: it.city ?? "",
+                            country: it.country ?? "",
+                            name: it.name,
+                          })
+                        }
+                        variant="ghost"
+                        size="icon"
+                        className="bg-muted text-muted-foreground cursor-pointer hover:bg-primary hover:text-primary-foreground"
+                      >
+                        <SquarePen />
+                      </Button>
+                    </SheetTrigger>
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>Editar Fabrica</p>
