@@ -28,17 +28,17 @@ export class RegistriesService {
 
     if (!existMachine) throw new BadRequestException('not found machine');
 
-    const existUserInFactory = await this.factoryRepository.findOne({
-      where: {
-        id: existMachine.factory.id,
-        users: {
-          id: userId,
-        },
-      },
-    });
+    // const existUserInFactory = await this.factoryRepository.findOne({
+    //   where: {
+    //     id: existMachine.factory.id,
+    //     users: {
+    //       id: userId,
+    //     },
+    //   },
+    // });
 
-    if (!existUserInFactory)
-      throw new BadRequestException('not found user in factory');
+    // if (!existUserInFactory)
+    //   throw new BadRequestException('not found user in factory');
 
     await this.registryRepository.insert({
       machine: {
