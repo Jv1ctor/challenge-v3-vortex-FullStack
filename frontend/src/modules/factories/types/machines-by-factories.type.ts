@@ -1,5 +1,4 @@
-
-export type MachinesByFactory = {
+type Machines = {
   id: number
   name: string
   model: string | null
@@ -10,4 +9,11 @@ export type MachinesByFactory = {
   last_registry_at: string
   created_at: string
   updated_at: string
+}
+
+export type MachinesByFactory = {
+  id: number
+  name: string
+  created_at: string
+  data: Machines[]
 }

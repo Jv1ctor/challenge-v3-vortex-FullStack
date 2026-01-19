@@ -37,7 +37,7 @@ export const FactoriesLoader = {
         token,
         Number(id)
       )
-      return data || []
+      return data
     } catch (error) {
       // Se 401/403 (token expirado), limpa e redireciona
       if (

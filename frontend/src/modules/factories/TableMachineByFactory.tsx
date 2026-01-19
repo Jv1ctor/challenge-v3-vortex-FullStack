@@ -4,21 +4,25 @@ import { TableCell, TableHead, TableRow } from "@/components/ui/table"
 import { Tooltip } from "@/components/ui/tooltip"
 import { TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { NotebookPen, SquarePen } from "lucide-react"
-import { NavLink, useLoaderData } from "react-router"
+import { NavLink, useLoaderData, useRevalidator } from "react-router"
 import type { MachinesByFactory } from "./types/machines-by-factories.type"
 import { FormMachine } from "./forms/FormMachine"
 import type { MachineFormData } from "./schemas/machine.schema"
 import { FormSheet } from "@/components/sheet/FormSheet"
 import { useHandleFormTable } from "@/hooks/handle-form-table.hooks"
 import { SheetTrigger } from "@/components/ui/sheet"
+import { useAuth } from "../auth/hooks/auth.hook"
+import { FactoriesService } from "./services/factories.service"
 
 export const TableMachineByFactory = () => {
-  const data = useLoaderData() as MachinesByFactory[]
-
+  const data = useLoaderData() as MachinesByFactory
+  const { revalidate } = useRevalidator()
+  const { token } = useAuth()
   const {
     activeForm,
     closeForm,
     open,
+    idRef,
     setOpen,
     openCreateForm,
     openEditForm,
@@ -26,11 +30,35 @@ export const TableMachineByFactory = () => {
   } = useHandleFormTable<MachineFormData>()
 
   const handleSubmit = async (formData: MachineFormData) => {
-    console.log("Machine data:", formData)
+    console.log("enviou")
+    // TODO: mensagem informando que aconteceu algum erro ou redirect para login.
+    if (!token) return
+    const result = await FactoriesService.createMachineInFactory(
+      token,
+      data.id,
+      formData
+    )
+
+    if (result) {
+      revalidate()
+      closeForm()
+    }
   }
 
   const handleEditSubmit = async (formData: MachineFormData) => {
-    console.log("Machine data edit:", formData)
+    if (!token) return
+    if (!idRef) return
+    const result = await FactoriesService.updateMachineInFactory(
+      token,
+      data.id,
+      idRef,
+      formData
+    )
+
+    if (result) {
+      revalidate()
+      closeForm()
+    }
   }
 
   return (
@@ -39,7 +67,7 @@ export const TableMachineByFactory = () => {
         openSheet={open}
         onOpenSheet={setOpen}
         setForms={() => openCreateForm()}
-        title={"Listagem das Maquinas na {FABRICA}"}
+        title={`Listagem das Maquinas na ${data.name}`}
         buttonLabel="Cadastrar Maquina"
         tableCaption="Listagem das Unidades"
         sheetContent={
@@ -96,7 +124,7 @@ export const TableMachineByFactory = () => {
             </TableRow>
           </>
         }
-        tableRowBody={data.map((it) => (
+        tableRowBody={data.data.map((it) => (
           <TableRow key={it.id}>
             <TableCell>{it.name}</TableCell>
             <TableCell>{it.model || ""}</TableCell>
@@ -134,12 +162,15 @@ export const TableMachineByFactory = () => {
                         variant="ghost"
                         size="icon"
                         onClick={() =>
-                          openEditForm({
-                            name: it.name,
-                            description: it.description ?? "",
-                            manufacturer: it.manufacturer ?? "",
-                            model: it.model ?? "",
-                          })
+                          openEditForm(
+                            {
+                              name: it.name,
+                              description: it.description ?? "",
+                              manufacturer: it.manufacturer ?? "",
+                              model: it.model ?? "",
+                            },
+                            it.id
+                          )
                         }
                         className="bg-muted text-muted-foreground cursor-pointer hover:bg-primary hover:text-primary-foreground"
                       >

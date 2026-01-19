@@ -16,8 +16,7 @@ export const machineSchema = z.object({
     .min(1, "Fabricante é obrigatório")
     .min(2, "Fabricante deve ter no mínimo 2 caracteres")
     .max(100, "Fabricante deve ter no máximo 100 caracteres"),
-  description: z
-    .string()
+  description: z.string(),
 })
 
 export type MachineFormData = z.infer<typeof machineSchema>

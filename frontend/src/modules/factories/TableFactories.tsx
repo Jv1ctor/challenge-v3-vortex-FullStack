@@ -7,7 +7,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Cog, SquarePen, Users } from "lucide-react"
-import { NavLink, useLoaderData, useNavigate } from "react-router"
+import {
+  NavLink,
+  useLoaderData,
+  useRevalidator,
+} from "react-router"
 import type { Factories } from "./types/factories.type"
 import { FormFactory } from "./forms/FormFactory"
 import type { FactoryFormData } from "./schemas/factory.schema"
@@ -19,13 +23,14 @@ import { useAuth } from "../auth/hooks/auth.hook"
 
 export const TableFactories = () => {
   const data = useLoaderData() as Factories[]
-  const navigator = useNavigate()
+  const { revalidate } = useRevalidator()
   const { token } = useAuth()
   const {
     activeForm,
     closeForm,
     setOpen,
     open,
+    idRef,
     openCreateForm,
     openEditForm,
     selectedData,
@@ -36,14 +41,20 @@ export const TableFactories = () => {
     const result = await FactoriesService.createFactory(token, formData)
 
     if (result) {
-      navigator("/factory")
+      revalidate()
       closeForm()
     }
   }
 
   const handleEditSubmit = async (formData: FactoryFormData) => {
-    console.log("Factory data edit:", formData)
-    // closeForm()
+    if (!token) return
+    if (!idRef) return
+    const result = await FactoriesService.updateFactory(token, idRef, formData)
+
+    if (result) {
+      revalidate()
+      closeForm()
+    }
   }
 
   return (
@@ -73,7 +84,7 @@ export const TableFactories = () => {
                   initialData={selectedData}
                 />
               }
-              buttonContent="editar Fábrica"
+              buttonContent="Editar Fábrica"
               title="Editar Fabrica"
               description="Preencha os dados para editar a fábrica"
             />
@@ -152,12 +163,15 @@ export const TableFactories = () => {
                     <SheetTrigger asChild>
                       <Button
                         onClick={() =>
-                          openEditForm({
-                            address: it.address ?? "",
-                            city: it.city ?? "",
-                            country: it.country ?? "",
-                            name: it.name,
-                          })
+                          openEditForm(
+                            {
+                              address: it.address ?? "",
+                              city: it.city ?? "",
+                              country: it.country ?? "",
+                              name: it.name,
+                            },
+                            it.id
+                          )
                         }
                         variant="ghost"
                         size="icon"
