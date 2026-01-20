@@ -4,7 +4,7 @@ import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
 export async function usersSeeder(datasource: DataSource): Promise<void> {
-  await datasource.query("TRUNCATE users RESTART IDENTITY CASCADE");
+  await datasource.query('TRUNCATE users RESTART IDENTITY CASCADE');
 
   const factoryRepository = datasource.getRepository(Factory);
   const userRepository = datasource.getRepository(User);

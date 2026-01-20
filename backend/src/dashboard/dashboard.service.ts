@@ -6,17 +6,17 @@ import { GetKwhByFactoriesDto } from './dtos/get-kwh-by-factories.dto';
 
 @Injectable()
 export class DashboardService {
-  constructor(private readonly consumptionRepository: ConsumptionRepository){}
+  constructor(private readonly consumptionRepository: ConsumptionRepository) {}
 
-  async getKwhByMonth(): Promise<GetKwhByMonthDto[]>{
-    return await this.consumptionRepository.getKwhByMonth()
+  async getKwhByMonth(): Promise<GetKwhByMonthDto[]> {
+    return await this.consumptionRepository.getKwhByMonth();
   }
 
-  async getKwhByMachines(): Promise<GetKwhByMachinesDto[]>{
-    return await this.consumptionRepository.getkwhByMachine()
+  async getKwhByMachines(): Promise<GetKwhByMachinesDto[]> {
+    return await this.consumptionRepository.getkwhByMachine();
   }
 
-  async getKwhByFactories(): Promise<GetKwhByFactoriesDto[]>{
-    return await this.consumptionRepository.getkwhByFactory()
+  async getKwhByFactories(): Promise<GetKwhByFactoriesDto[]> {
+    return await this.consumptionRepository.getkwhByFactory();
   }
 }

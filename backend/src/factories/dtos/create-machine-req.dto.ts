@@ -27,11 +27,7 @@ export const CreateMachineReqSchema = z.object({
     .regex(SAFE_TEXT, 'invalid character')
     .optional(),
 
-  description: z
-    .string()
-    .trim()
-    .max(300)
-    .optional(),
+  description: z.string().trim().max(300).optional(),
 });
 
 export type CreateMachineReqDto = z.infer<typeof CreateMachineReqSchema>;

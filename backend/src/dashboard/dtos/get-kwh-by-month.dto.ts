@@ -1,6 +1,4 @@
-
-
-export class GetKwhByMonthDto{
-  month: Date
-  total_kwh: number
+export class GetKwhByMonthDto {
+  month: Date;
+  total_kwh: number;
 }
