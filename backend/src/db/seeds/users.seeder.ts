@@ -18,31 +18,31 @@ export async function usersSeeder(datasource: DataSource): Promise<void> {
   // Criar 5 usuários normais distribuídos entre as factories
   const users = [
     {
-      name: 'João_Silva',
+      name: 'joão_silva',
       password: hashedPassword,
       isAdmin: false,
       factory: factories[0], // Fábrica Norte
     },
     {
-      name: 'Maria_Santos',
+      name: 'maria_santos',
       password: hashedPassword,
       isAdmin: false,
       factory: factories[0], // Fábrica Norte
     },
     {
-      name: 'Pedro_Oliveira',
+      name: 'pedro_oliveira',
       password: hashedPassword,
       isAdmin: false,
       factory: factories[1], // Fábrica Sul
     },
     {
-      name: 'Ana_Costa',
+      name: 'ana_costa',
       password: hashedPassword,
       isAdmin: false,
       factory: factories[1], // Fábrica Sul
     },
     {
-      name: 'Carlos_Souza',
+      name: 'carlos_souza',
       password: hashedPassword,
       isAdmin: false,
       factory: factories[2], // Fábrica Leste
