@@ -1,10 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
-import { SignInResponseDto } from './dtos/sign-in-response.dto';
 import bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { Role } from 'src/common/enums/role.enum';
 import { Platform } from 'src/common/enums/platform.enum';
+import { SignInDto } from './dtos/sign-in.dto';
 
 @Injectable()
 export class AuthService {
@@ -17,8 +17,8 @@ export class AuthService {
     username: string,
     password: string,
     platform: Platform,
-  ): Promise<SignInResponseDto> {
-    const user = await this.usersService.getOneByName(username);
+  ): Promise<SignInDto> {
+    const user = await this.usersService.getOneByNameWithPassword(username);
 
     if (!user) throw new UnauthorizedException();
 
@@ -39,6 +39,6 @@ export class AuthService {
       { expiresIn: '1d' },
     );
 
-    return { access_token: accessToken };
+    return { id: user.id, access_token: accessToken };
   }
 }
