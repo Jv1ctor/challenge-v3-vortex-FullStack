@@ -1,4 +1,4 @@
-export class GetUserDto {
+export class GetUserWithPasswordDto {
   id: string;
   name: string;
   password: string;

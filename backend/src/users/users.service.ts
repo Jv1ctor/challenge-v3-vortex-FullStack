@@ -2,9 +2,10 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import { GetUserDto } from './dtos/get-user.dto';
+import { GetUserWithPasswordDto } from './dtos/get-user-with-password.dto';
 import bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
+import { GetUserWithFactoryDto } from './dtos/get-user-with-factory.dto';
 
 @Injectable()
 export class UsersService {
@@ -14,7 +15,34 @@ export class UsersService {
     private readonly configService: ConfigService,
   ) {}
 
-  async getOneByName(name: string): Promise<GetUserDto | null> {
+  async getOneByIdWithFactory(id: string): Promise<GetUserWithFactoryDto> {
+    const user = await this.userRepository.findOne({
+      select: {
+        id: true,
+        name: true,
+        isAdmin: true,
+        createdAt: true,
+        factory: {
+          id: true,
+          name: true,
+        },
+      },
+      where: {
+        id,
+      },
+      relations: {
+        factory: true,
+      },
+    });
+
+    if (!user) throw new BadRequestException('not found user');
+
+    return user;
+  }
+
+  async getOneByNameWithPassword(
+    name: string,
+  ): Promise<GetUserWithPasswordDto | null> {
     return this.userRepository.findOneBy({ name });
   }
 
