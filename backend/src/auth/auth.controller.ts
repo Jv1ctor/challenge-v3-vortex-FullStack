@@ -32,7 +32,7 @@ export class AuthController {
     return {
       access_token,
       id: id,
-      facotyId: result.factory?.id ?? null,
+      factoryId: result.factory?.id ?? null,
       isAdmin: result.isAdmin,
       name: result.name,
     };
