@@ -9,6 +9,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { RolesGuard } from './guards/role.guard';
 import { FactoryAccessGuard } from './guards/factory-accesss.guard';
 import { PlatformGuard } from './guards/platform.guard';
+import { MachineAccessGuard } from './guards/machine-access.guard';
 
 @Module({
   imports: [
@@ -37,6 +38,10 @@ import { PlatformGuard } from './guards/platform.guard';
     {
       provide: APP_GUARD,
       useClass: PlatformGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: MachineAccessGuard,
     },
   ],
   controllers: [AuthController],

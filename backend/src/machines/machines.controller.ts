@@ -19,10 +19,10 @@ import {
 import { ZodValidationPipe } from 'src/common/pipes/zod-validation.pipe';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/enums/role.enum';
-import { FactoryAccess } from 'src/common/decorators/factory-access.decorator';
 import { type Request } from 'express';
 import { Platform } from 'src/common/enums/platform.enum';
 import { PlatformSelect } from 'src/common/decorators/platform.decorator';
+import { MachineAccess } from 'src/common/decorators/machine-access.decorator';
 
 @Controller('machines')
 export class MachinesController {
@@ -38,7 +38,7 @@ export class MachinesController {
     return { data: await this.machineService.getAllMachines() };
   }
 
-  @FactoryAccess()
+  @MachineAccess()
   @Get(':id')
   async getMachineById(
     @Param('id', ParseIntPipe) id: number,
@@ -46,7 +46,7 @@ export class MachinesController {
     return this.machineService.getMachine(id);
   }
 
-  @FactoryAccess()
+  @MachineAccess()
   @Get(':id/registries')
   async getAllRegistriesByMachine(
     @Param('id', ParseIntPipe) id: number,
@@ -60,7 +60,7 @@ export class MachinesController {
   @HttpCode(201)
   @Roles(Role.Operator)
   @PlatformSelect(Platform.Mobile)
-  @FactoryAccess()
+  @MachineAccess()
   async insertRegistries(
     @Param('id', ParseIntPipe) id: number,
     @Body(new ZodValidationPipe(InsertRegistriesByMachineSchema))
