@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Not, Repository } from 'typeorm';
 import { Factory } from './entities/factory.entity';
 import { User } from 'src/modules/users/entities/user.entity';
@@ -10,6 +14,7 @@ import { Machine } from 'src/modules/machines/entities/machine.entity';
 import { GetMachinesByFactoryDto } from './dtos/get-machines-by-factory.dto';
 import { UpdateFactoryDto } from './dtos/update-factory.dto';
 import { UpdatedMachineDto } from './dtos/update-machine.dto';
+import { ErrorMessage } from 'src/common/enums/error-message.enum';
 
 @Injectable()
 export class FactoriesService {
@@ -30,7 +35,8 @@ export class FactoriesService {
   ): Promise<CreateFactoryResDto> {
     const existFactory = await this.factoryRepository.findOneBy({ name });
 
-    if (existFactory) throw new BadRequestException('already exist factory');
+    if (existFactory)
+      throw new ConflictException(ErrorMessage.FACTORY_ALREADY_REGISTERED);
 
     const result = await this.factoryRepository.insert({
       name,
@@ -46,7 +52,7 @@ export class FactoriesService {
   async getFactoryInfo(factoryId: number) {
     const factory = await this.factoryRepository.findOneBy({ id: factoryId });
 
-    if (!factory) throw new BadRequestException('not found factory');
+    if (!factory) throw new NotFoundException(ErrorMessage.FACTORY_NOT_FOUND);
 
     return factory;
   }
@@ -60,7 +66,7 @@ export class FactoriesService {
     });
 
     if (existNameFactory.length > 0)
-      throw new BadRequestException(`"${factory.name}" already used`);
+      throw new ConflictException(ErrorMessage.FACTORY_NAME_ALREADY_USED);
 
     await this.factoryRepository.update({ id: factoryId }, { ...factory });
   }
@@ -68,7 +74,7 @@ export class FactoriesService {
   async registerUser(factoryId: number, userId: string) {
     const factory = await this.factoryRepository.findOneBy({ id: factoryId });
 
-    if (!factory) throw new BadRequestException('not found factory');
+    if (!factory) throw new NotFoundException(ErrorMessage.FACTORY_NOT_FOUND);
 
     const user = await this.userRepository.findOne({
       where: {
@@ -77,10 +83,12 @@ export class FactoriesService {
       relations: { factory: true },
     });
 
-    if (!user) throw new BadRequestException('not found user');
+    if (!user) throw new NotFoundException(ErrorMessage.USER_NOT_FOUND);
 
     if (user.factory !== null && user.factory.id)
-      throw new BadRequestException('already registed factory');
+      throw new ConflictException(
+        ErrorMessage.USER_ALREADY_ASSIGNED_TO_FACTORY,
+      );
 
     await this.userRepository.update(
       { id: userId },
@@ -168,14 +176,14 @@ export class FactoriesService {
   ) {
     const factory = await this.factoryRepository.findOneBy({ id: factoryId });
 
-    if (!factory) throw new BadRequestException('not found factory');
+    if (!factory) throw new NotFoundException(ErrorMessage.FACTORY_NOT_FOUND);
 
     const existMachine = await this.machineRepository.findOneBy({
       name: machine.name,
     });
 
     if (existMachine)
-      throw new BadRequestException('already exist machine name');
+      throw new ConflictException(ErrorMessage.MACHINE_NAME_ALREADY_EXISTS);
 
     await this.machineRepository.insert({
       ...machine,
@@ -209,12 +217,12 @@ export class FactoriesService {
     });
 
     if (!existMachineInFactory) {
-      throw new BadRequestException(`not found this machine in factory`);
+      throw new NotFoundException(ErrorMessage.MACHINE_NOT_FOUND_IN_FACTORY);
     }
 
     if (existMachine.length > 0)
-      throw new BadRequestException(
-        `"${machine.name}" already used in "${existMachine[0].factory.name}"`,
+      throw new ConflictException(
+        ErrorMessage.MACHINE_NAME_USED_IN_OTHER_FACTORY,
       );
 
     await this.machineRepository.update({ id: machineId }, { ...machine });

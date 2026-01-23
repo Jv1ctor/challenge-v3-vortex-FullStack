@@ -1,3 +1,4 @@
+import { ErrorMessage } from 'src/common/enums/error-message.enum';
 import z from 'zod';
 
 export const CreateUserOperatorSchema = z
@@ -10,7 +11,7 @@ export const CreateUserOperatorSchema = z
       .trim()
       .normalize('NFC')
       .toLowerCase()
-      .regex(/^[\p{L}\p{N}._-]+$/u, 'invalid characters')
+      .regex(/^[\p{L}\p{N}._-]+$/u, ErrorMessage.FIELD_INVALID)
       .nonoptional(),
     password: z.string().nonempty().nonoptional(),
   })

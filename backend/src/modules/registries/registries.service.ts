@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Registries } from './entities/registries.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -6,6 +10,7 @@ import { Machine } from 'src/modules/machines/entities/machine.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 import { RegistriesDto } from './dtos/registries.dto';
 import { Factory } from 'src/modules/factories/entities/factory.entity';
+import { ErrorMessage } from 'src/common/enums/error-message.enum';
 
 @Injectable()
 export class RegistriesService {
@@ -14,10 +19,6 @@ export class RegistriesService {
     private readonly registryRepository: Repository<Registries>,
     @InjectRepository(Machine)
     private readonly machineRepository: Repository<Machine>,
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-    @InjectRepository(Factory)
-    private readonly factoryRepository: Repository<Factory>,
   ) {}
 
   async insertRegistry(machineId: number, userId: string, value: number) {
@@ -26,7 +27,8 @@ export class RegistriesService {
       relations: { factory: true },
     });
 
-    if (!existMachine) throw new BadRequestException('not found machine');
+    if (!existMachine)
+      throw new NotFoundException(ErrorMessage.MACHINE_NOT_FOUND);
 
     await this.registryRepository.insert({
       machine: {
@@ -44,7 +46,8 @@ export class RegistriesService {
       id: machineId,
     });
 
-    if (!existMachine) throw new BadRequestException('not found machine');
+    if (!existMachine)
+      throw new NotFoundException(ErrorMessage.MACHINE_NOT_FOUND);
 
     return this.registryRepository.find({
       where: {

@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  Param,
-  ParseUUIDPipe,
-  Post,
-  Req,
-} from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import {
   type CreateUserOperatorDto,

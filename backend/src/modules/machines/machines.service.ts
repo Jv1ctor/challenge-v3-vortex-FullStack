@@ -1,8 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Machine } from './entities/machine.entity';
 import { Repository } from 'typeorm';
 import { MachineDto } from './dtos/machine.dto';
+import { ErrorMessage } from 'src/common/enums/error-message.enum';
 
 @Injectable()
 export class MachinesService {
@@ -51,7 +52,7 @@ export class MachinesService {
       relations: { factory: true },
     });
 
-    if (!machine) throw new BadRequestException('not found machine');
+    if (!machine) throw new NotFoundException(ErrorMessage.MACHINE_NOT_FOUND);
 
     return machine;
   }

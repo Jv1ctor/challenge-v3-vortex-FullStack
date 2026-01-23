@@ -5,6 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Role } from 'src/common/enums/role.enum';
 import { Platform } from 'src/common/enums/platform.enum';
 import { SignInDto } from './dtos/sign-in.dto';
+import { ErrorMessage } from 'src/common/enums/error-message.enum';
 
 @Injectable()
 export class AuthService {
@@ -20,11 +21,11 @@ export class AuthService {
   ): Promise<SignInDto> {
     const user = await this.usersService.getOneByNameWithPassword(username);
 
-    if (!user) throw new UnauthorizedException();
+    if (!user) throw new UnauthorizedException(ErrorMessage.UNAUTHORIZED);
 
     const matchPass = await bcrypt.compare(password, user.password);
 
-    if (!matchPass) throw new UnauthorizedException();
+    if (!matchPass) throw new UnauthorizedException(ErrorMessage.UNAUTHORIZED);
 
     const roles: string[] = [];
 

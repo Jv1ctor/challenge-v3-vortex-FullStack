@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -8,6 +13,7 @@ import { ConfigService } from '@nestjs/config';
 import { GetUserWithFactoryDto } from './dtos/get-user-with-factory.dto';
 import { Machine } from 'src/modules/machines/entities/machine.entity';
 import { GetOperatorInfo } from './dtos/get-operator-info.dto';
+import { ErrorMessage } from 'src/common/enums/error-message.enum';
 
 @Injectable()
 export class UsersService {
@@ -18,13 +24,6 @@ export class UsersService {
     private readonly machineRepository: Repository<Machine>,
     private readonly configService: ConfigService,
   ) {}
-
-  // select users.id, users.name, factories.name as factory_name, count(registries.id) as total_registries, max(registries.created_at) as last_registry_at
-  // from users
-  // left join registries on registries.user_id = users.id
-  // left join factories on factories.id = users.factory_id
-  // WHERE users.id = 'e877fa68-fd60-44e3-b950-aa08130d19d8'
-  // GROUP BY users.name, users.id, factory_name LIMIT 100
 
   async getOperatorInfo(id: string): Promise<GetOperatorInfo> {
     const operator = await this.userRepository
@@ -41,7 +40,7 @@ export class UsersService {
       .getRawOne<GetOperatorInfo>();
 
     if (!operator) {
-      throw new BadRequestException('not found operator info');
+      throw new NotFoundException(ErrorMessage.OPERATOR_INFO_NOT_FOUND);
     }
     return operator;
   }
@@ -66,7 +65,7 @@ export class UsersService {
       },
     });
 
-    if (!user) throw new BadRequestException('not found user');
+    if (!user) throw new NotFoundException(ErrorMessage.USER_NOT_FOUND);
 
     return user;
   }
@@ -96,7 +95,8 @@ export class UsersService {
   async createUserOperator(name: string, password: string) {
     const existUsername = await this.userRepository.findOneBy({ name });
 
-    if (existUsername) throw new BadRequestException('exist username');
+    if (existUsername)
+      throw new ConflictException(ErrorMessage.USERNAME_ALREADY_EXISTS);
 
     const saltRounds = Number(
       this.configService.get<number>('BCRYPT_SALT_ROUNDS', 10),
