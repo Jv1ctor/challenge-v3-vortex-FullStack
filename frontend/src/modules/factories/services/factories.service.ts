@@ -1,9 +1,10 @@
-import { formatDate } from "@/lib/formatted-date"
+import { formatDate } from "@/shared/lib/formatted-date"
 import type { Factories } from "../types/factories.type"
 import type { MachinesByFactory } from "../types/machines-by-factories.type"
 import type { UsersByFactories } from "../types/users-by-factories.type"
 import type { FactoryFormData } from "../schemas/factory.schema"
 import type { MachineFormData } from "../schemas/machine.schema"
+import type { ResponseErrors } from "@/shared/types/response-errors.type"
 
 type ResponseApiGetAllFactories = {
   data: Factories[]
@@ -37,7 +38,7 @@ export const FactoriesService = {
 
   async getAllMachinesByFactories(
     token: string,
-    factoryId: number
+    factoryId: number,
   ): Promise<MachinesByFactory | null> {
     const response = await fetch(
       `http://localhost:4000/api/factories/${factoryId}/machines`,
@@ -48,7 +49,7 @@ export const FactoriesService = {
           Authorization: `Bearer ${token}`,
         },
         credentials: "include",
-      }
+      },
     )
 
     if (!response.ok) {
@@ -76,7 +77,7 @@ export const FactoriesService = {
 
   async getAllUsersByFactories(
     token: string,
-    factoryId: number
+    factoryId: number,
   ): Promise<UsersByFactories[]> {
     const response = await fetch(
       `http://localhost:4000/api/factories/${factoryId}/user`,
@@ -87,7 +88,7 @@ export const FactoriesService = {
           Authorization: `Bearer ${token}`,
         },
         credentials: "include",
-      }
+      },
     )
 
     if (!response.ok) {
@@ -105,7 +106,10 @@ export const FactoriesService = {
     return formatted
   },
 
-  async createFactory(token: string, body: FactoryFormData) {
+  async createFactory(
+    token: string,
+    body: FactoryFormData,
+  ): Promise<{ id: number }> {
     const response = await fetch(`http://localhost:4000/api/factories`, {
       method: "POST",
       headers: {
@@ -118,7 +122,8 @@ export const FactoriesService = {
 
     if (!response.ok) {
       console.log(`RESPONSE STATUS: ${response.status}`)
-      throw response
+      const result: ResponseErrors = await response.json()
+      throw result
     }
 
     const result: { id: number } = await response.json()
@@ -137,12 +142,13 @@ export const FactoriesService = {
         },
         body: JSON.stringify(body),
         credentials: "include",
-      }
+      },
     )
 
     if (!response.ok) {
       console.log(`RESPONSE STATUS: ${response.status}`)
-      throw response
+      const result: ResponseErrors = await response.json()
+      throw result
     }
 
     if (response.status === 204) {
@@ -155,7 +161,7 @@ export const FactoriesService = {
   async createMachineInFactory(
     token: string,
     factoryId: number,
-    body: MachineFormData
+    body: MachineFormData,
   ) {
     const response = await fetch(
       `http://localhost:4000/api/factories/${factoryId}/machines`,
@@ -167,26 +173,24 @@ export const FactoriesService = {
         },
         body: JSON.stringify(body),
         credentials: "include",
-      }
+      },
     )
 
     if (!response.ok) {
       console.log(`RESPONSE STATUS: ${response.status}`)
-      throw response
+      const result: ResponseErrors = await response.json()
+      throw result
     }
 
-    if (response.status === 201) {
-      return true
-    } else {
-      return false
-    }
+   
+    return true
   },
 
   async updateMachineInFactory(
     token: string,
     factoryId: number,
     machineId: number,
-    body: MachineFormData
+    body: MachineFormData,
   ) {
     const response = await fetch(
       `http://localhost:4000/api/factories/${factoryId}/machines/${machineId}`,
@@ -198,12 +202,13 @@ export const FactoriesService = {
         },
         body: JSON.stringify(body),
         credentials: "include",
-      }
+      },
     )
 
     if (!response.ok) {
       console.log(`RESPONSE STATUS: ${response.status}`)
-      throw response
+      const result: ResponseErrors = await response.json()
+      throw result
     }
 
     if (response.status === 204) {

@@ -1,23 +1,19 @@
-import { TableData } from "@/components/TableData"
-import { Button } from "@/components/ui/button"
-import { TableCell, TableHead, TableRow } from "@/components/ui/table"
+import { TableData } from "@/shared/components/TableData"
+import { Button } from "@/shared/components/ui/button"
+import { TableCell, TableHead, TableRow } from "@/shared/components/ui/table"
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/shared/components/ui/tooltip"
 import { Cog, SquarePen, Users } from "lucide-react"
-import {
-  NavLink,
-  useLoaderData,
-  useRevalidator,
-} from "react-router"
+import { NavLink, useLoaderData, useRevalidator } from "react-router"
 import type { Factories } from "./types/factories.type"
 import { FormFactory } from "./forms/FormFactory"
 import type { FactoryFormData } from "./schemas/factory.schema"
-import { FormSheet } from "@/components/sheet/FormSheet"
-import { SheetTrigger } from "@/components/ui/sheet"
-import { useHandleFormTable } from "@/hooks/handle-form-table.hooks"
+import { FormSheet } from "@/shared/components/sheet/FormSheet"
+import { SheetTrigger } from "@/shared/components/ui/sheet"
+import { useHandleFormTable } from "@/shared/hooks/handle-form-table.hooks"
 import { FactoriesService } from "./services/factories.service"
 import { useAuth } from "../auth/hooks/auth.hook"
 
@@ -36,7 +32,6 @@ export const TableFactories = () => {
     selectedData,
   } = useHandleFormTable<FactoryFormData>()
   const handleSubmit = async (formData: FactoryFormData) => {
-    // TODO: mensagem informando que aconteceu algum erro ou redirect para login.
     if (!token) return
     const result = await FactoriesService.createFactory(token, formData)
 
@@ -84,7 +79,7 @@ export const TableFactories = () => {
                   initialData={selectedData}
                 />
               }
-              buttonContent="Editar Fábrica"
+              buttonContent="Salvar"
               title="Editar Fabrica"
               description="Preencha os dados para editar a fábrica"
             />
@@ -112,7 +107,7 @@ export const TableFactories = () => {
         tableRowBody={data.map((it) => (
           <TableRow key={it.id}>
             <TableCell>{it.name}</TableCell>
-            <TableCell className="align-top max-w-md">
+            <TableCell className="max-w-md">
               <div className="whitespace-normal wrap-break-word">
                 {it.address && it.city && it.country
                   ? `${it.address}, ${it.city} - ${it.country}`
@@ -170,7 +165,7 @@ export const TableFactories = () => {
                               country: it.country ?? "",
                               name: it.name,
                             },
-                            it.id
+                            it.id,
                           )
                         }
                         variant="ghost"

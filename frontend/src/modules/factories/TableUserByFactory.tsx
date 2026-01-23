@@ -1,11 +1,11 @@
-import { TableData } from "@/components/TableData"
-import { Button } from "@/components/ui/button"
-import { TableCell, TableHead, TableRow } from "@/components/ui/table"
+import { TableData } from "@/shared/components/TableData"
+import { Button } from "@/shared/components/ui/button"
+import { TableCell, TableHead, TableRow } from "@/shared/components/ui/table"
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/shared/components/ui/tooltip"
 import { SquarePen } from "lucide-react"
 import { useLoaderData } from "react-router"
 import type { UsersByFactories } from "./types/users-by-factories.type"

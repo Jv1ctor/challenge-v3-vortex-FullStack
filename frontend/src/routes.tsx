@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router"
 import LoginPage from "./pages/LoginPage"
-import { authMiddleware } from "./middleware/auth.middleware"
+import { authMiddleware } from "./shared/middleware/auth.middleware"
 import { DashboardPage } from "./pages/DashboardPage"
 import { Root } from "./Root"
 import { FactoryPage } from "./pages/factory/FactoryPage"

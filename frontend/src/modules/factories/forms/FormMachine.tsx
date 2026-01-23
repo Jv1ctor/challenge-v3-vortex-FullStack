@@ -1,8 +1,8 @@
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import { Input } from "@/shared/components/ui/input"
+import { Label } from "@/shared/components/ui/label"
+import { Textarea } from "@/shared/components/ui/textarea"
 import { machineSchema, type MachineFormData } from "../schemas/machine.schema"
-import { useForm } from "@/hooks/form.hook"
+import { useForm } from "@/shared/hooks/form.hook"
 
 type Props = {
   onSubmit: (data: MachineFormData) => void | Promise<void>
@@ -10,7 +10,7 @@ type Props = {
 }
 
 export const FormMachine = ({ onSubmit, initialData }: Props) => {
-  const { formData, handleChange, errors, handleSubmit } =
+  const { formData, handleChange, errors, handleSubmit, fetchError } =
     useForm<MachineFormData>({
       initialData: initialData ?? {
         name: "",
@@ -34,10 +34,13 @@ export const FormMachine = ({ onSubmit, initialData }: Props) => {
           value={formData.name}
           onChange={(e) => handleChange("name", e.target.value)}
           aria-invalid={!!errors.name}
-          className={errors.name ? "border-destructive" : ""}
+          className={errors.name || fetchError ? "border-destructive" : ""}
         />
         {errors.name && (
           <p className="text-sm text-destructive">{errors.name}</p>
+        )}
+        {fetchError && (
+          <p className="text-sm text-destructive">{fetchError}</p>
         )}
       </div>
 

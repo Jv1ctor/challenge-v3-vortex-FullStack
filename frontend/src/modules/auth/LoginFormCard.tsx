@@ -5,16 +5,16 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
+} from "@/shared/components/ui/card"
+import { Separator } from "@/shared/components/ui/separator"
 import { useEffect, useState, type FormEvent } from "react"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/shared/components/ui/button"
 import { useAuth } from "./hooks/auth.hook"
 import { useNavigate } from "react-router"
-import { InputPasswordWithMessage } from "@/components/InputPasswordWithMessage"
+import { InputPasswordWithMessage } from "@/shared/components/InputPasswordWithMessage"
 import { User } from "lucide-react"
-import { Spinner } from "@/components/ui/spinner"
-import { InputWithMessage } from "@/components/InputWithMessage"
+import { Spinner } from "@/shared/components/ui/spinner"
+import { InputWithMessage } from "@/shared/components/InputWithMessage"
 
 export const LoginFormCard = () => {
   const [name, setName] = useState("")

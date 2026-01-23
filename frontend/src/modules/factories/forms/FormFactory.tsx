@@ -1,7 +1,7 @@
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Input } from "@/shared/components/ui/input"
+import { Label } from "@/shared/components/ui/label"
 import { factorySchema, type FactoryFormData } from "../schemas/factory.schema"
-import { useForm } from "@/hooks/form.hook"
+import { useForm } from "@/shared/hooks/form.hook"
 
 type Props = {
   onSubmit: (data: FactoryFormData) => void | Promise<void>
@@ -9,7 +9,7 @@ type Props = {
 }
 
 export const FormFactory = ({ onSubmit, initialData }: Props) => {
-  const { formData, errors, handleChange, handleSubmit } =
+  const { formData, errors, fetchError, handleChange, handleSubmit } =
     useForm<FactoryFormData>({
       initialData: initialData ?? {
         address: "",
@@ -34,10 +34,13 @@ export const FormFactory = ({ onSubmit, initialData }: Props) => {
           value={formData.name}
           onChange={(e) => handleChange("name", e.target.value)}
           aria-invalid={!!errors.name}
-          className={errors.name ? "border-destructive" : ""}
+          className={errors.name || fetchError ? "border-destructive" : ""}
         />
         {errors.name && (
           <p className="text-sm text-destructive">{errors.name}</p>
+        )}
+        {fetchError && (
+          <p className="text-sm text-destructive">{fetchError}</p>
         )}
       </div>
 

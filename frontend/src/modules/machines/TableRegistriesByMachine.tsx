@@ -1,7 +1,11 @@
-import { TableData } from "@/components/TableData"
-import { Button } from "@/components/ui/button"
-import { TableCell, TableHead, TableRow } from "@/components/ui/table"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { TableData } from "@/shared/components/TableData"
+import { Button } from "@/shared/components/ui/button"
+import { TableCell, TableHead, TableRow } from "@/shared/components/ui/table"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip"
 import { useLoaderData } from "react-router"
 import type { Registries } from "./types/registries.type"
 import { SquarePen } from "lucide-react"
@@ -33,9 +37,7 @@ export const TableRegistriesByMachine = () => {
         tableRowBody={data.map((it) => (
           <TableRow key={it.id}>
             <TableCell>{it.value.toFixed(2)} kWh</TableCell>
-            <TableCell>
-              {it.createdAt}
-            </TableCell>
+            <TableCell>{it.createdAt}</TableCell>
             <TableCell className="text-center">{it.user.name}</TableCell>
             <TableCell>
               <div className="flex gap-5 justify-end">

@@ -1,7 +1,7 @@
 import { Outlet, useMatches } from "react-router"
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/sidebar/AppSidebar"
-import { HeaderRoot } from "./components/HeaderRoot"
+import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar"
+import { AppSidebar } from "@/shared/components/sidebar/AppSidebar"
+import { HeaderRoot } from "./shared/components/HeaderRoot"
 
 type HandleType = {
   title: string
