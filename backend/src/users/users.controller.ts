@@ -1,4 +1,13 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Req,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import {
   type CreateUserOperatorDto,
@@ -9,6 +18,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/enums/role.enum';
 import { PlatformSelect } from 'src/common/decorators/platform.decorator';
 import { Platform } from 'src/common/enums/platform.enum';
+import { type Request } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -21,5 +31,11 @@ export class UsersController {
   @ZodValidation(CreateUserOperatorSchema)
   async createOperator(@Body() body: CreateUserOperatorDto) {
     await this.usersService.createUserOperator(body.username, body.password);
+  }
+
+  @Get('operator/')
+  @Roles(Role.Operator)
+  async getOperatorInfo(@Req() request: Request) {
+    return await this.usersService.getOperatorInfo(request.user.id);
   }
 }
