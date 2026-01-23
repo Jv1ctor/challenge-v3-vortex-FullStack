@@ -1,16 +1,35 @@
 import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
 import z, { ZodError } from 'zod';
 
+type GroupedZodError = {
+  field: string;
+  errors: string[];
+};
+
 @Injectable()
 export class ZodValidationPipe implements PipeTransform {
   constructor(private schema: z.ZodObject | z.ZodEnum) {}
 
   private getZodMessageError(zodError: ZodError) {
-    console.log(zodError);
-    return zodError.issues.map((issue) => ({
-      fied: issue.path[0],
+    const zodErrorsList = zodError.issues.map((issue) => ({
+      field: issue.path[0],
       error: issue.message,
     }));
+    const groupedZodError = zodErrorsList.reduce<GroupedZodError[]>(
+      (acc, it) => {
+        const existing = acc.find((e) => e.field === it.field);
+
+        if (existing) {
+          existing.errors.push(it.error);
+        } else {
+          acc.push({ field: it.field.toString(), errors: [it.error] });
+        }
+
+        return acc;
+      },
+      [] as GroupedZodError[],
+    );
+    return groupedZodError;
   }
 
   transform(value: unknown) {
@@ -23,7 +42,7 @@ export class ZodValidationPipe implements PipeTransform {
 
         throw new BadRequestException(messageError, {
           cause: error,
-          description: 'Validation failed',
+          description: 'Error Validation',
         });
       }
     }
