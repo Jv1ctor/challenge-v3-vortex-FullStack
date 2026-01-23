@@ -14,10 +14,10 @@ type Props = {
   tableCaption: string
   tableRowHeader: ReactNode
   tableRowBody: ReactNode
-  sheetContent: ReactNode
-  setForms: () => void
-  openSheet: boolean
-  onOpenSheet: Dispatch<SetStateAction<boolean>>
+  sheetContent?: ReactNode
+  setForms?: () => void
+  openSheet?: boolean
+  onOpenSheet?: Dispatch<SetStateAction<boolean>>
 }
 
 export const TableData = ({
