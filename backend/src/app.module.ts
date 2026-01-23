@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module';
-import { DbModule } from './db/db.module';
-import { FactoriesModule } from './factories/factories.module';
-import { MachinesModule } from './machines/machines.module';
-import { RegistriesModule } from './registries/registries.module';
-import { DashboardModule } from './dashboard/dashboard.module';
+import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { DbModule } from './modules/db/db.module';
+import { FactoriesModule } from './modules/factories/factories.module';
+import { MachinesModule } from './modules/machines/machines.module';
+import { RegistriesModule } from './modules/registries/registries.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 @Module({
   imports: [
