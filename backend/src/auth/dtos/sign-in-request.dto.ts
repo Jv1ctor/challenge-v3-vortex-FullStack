@@ -1,9 +1,15 @@
-import z from "zod";
-
+import z from 'zod';
 
 export const SignInRequestSchema = z.object({
-  username: z.string().max(200).min(4).nonempty().nonoptional(),
-  password: z.string().nonempty().nonoptional()
-})
+  username: z
+    .string()
+    .max(200)
+    .min(4)
+    .toLowerCase()
+    .trim()
+    .nonempty()
+    .nonoptional(),
+  password: z.string().nonempty().nonoptional(),
+});
 
-export type SignInRequestDto = z.infer<typeof SignInRequestSchema>
+export type SignInRequestDto = z.infer<typeof SignInRequestSchema>;

@@ -8,15 +8,17 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity('machines')
+@Unique(['factory', 'name'])
 export class Machine {
   @PrimaryGeneratedColumn('identity')
   id: number;
 
-  @Column('varchar', { length: 225, unique: true })
+  @Column('varchar', { length: 225 })
   name: string;
 
   @Column('varchar', { nullable: true })
@@ -34,7 +36,10 @@ export class Machine {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @ManyToOne(() => Factory, (factory) => factory.machines)
+  @ManyToOne(() => Factory, (factory) => factory.machines, {
+    onDelete: 'RESTRICT',
+    onUpdate: 'CASCADE',
+  })
   @JoinColumn({ name: 'factory_id' })
   factory: Factory;
 

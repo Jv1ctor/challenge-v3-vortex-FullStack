@@ -1,10 +1,33 @@
 import z from 'zod';
 
+const SAFE_TEXT = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9\s\-\.,()]+$/;
 export const CreateMachineReqSchema = z.object({
-  name: z.string().nonempty().nonoptional(),
-  model: z.string().nonempty().optional(),
-  manufacture: z.string().nonempty().optional(),
-  description: z.string().nonempty().optional(),
+  name: z
+    .string()
+    .trim()
+    .min(2)
+    .max(60)
+    .toLowerCase()
+    .normalize('NFC')
+    .regex(SAFE_TEXT, 'invalid character'),
+
+  model: z
+    .string()
+    .trim()
+    .min(2)
+    .max(60)
+    .regex(SAFE_TEXT, 'invalid character')
+    .optional(),
+
+  manufacturer: z
+    .string()
+    .trim()
+    .min(2)
+    .max(60)
+    .regex(SAFE_TEXT, 'invalid character')
+    .optional(),
+
+  description: z.string().trim().max(300).optional(),
 });
 
 export type CreateMachineReqDto = z.infer<typeof CreateMachineReqSchema>;

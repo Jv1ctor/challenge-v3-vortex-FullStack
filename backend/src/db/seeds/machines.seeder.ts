@@ -3,7 +3,7 @@ import { Factory } from 'src/factories/entities/factory.entity';
 import { DataSource } from 'typeorm';
 
 export async function machinesSeeder(datasource: DataSource): Promise<void> {
-  await datasource.query("TRUNCATE machines RESTART IDENTITY CASCADE");
+  await datasource.query('TRUNCATE machines RESTART IDENTITY CASCADE');
 
   const factoryRepository = datasource.getRepository(Factory);
   const machineRepository = datasource.getRepository(Machine);

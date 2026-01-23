@@ -8,6 +8,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 @Module({
   imports: [TypeOrmModule.forFeature([Registries])],
   controllers: [DashboardController],
-  providers: [DashboardService, ConsumptionRepository]
+  providers: [DashboardService, ConsumptionRepository],
 })
 export class DashboardModule {}

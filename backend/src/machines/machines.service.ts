@@ -29,8 +29,6 @@ export class MachinesService {
       relations: { factory: true },
     });
 
-    console.log(machines);
-
     return machines;
   }
 

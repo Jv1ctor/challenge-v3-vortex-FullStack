@@ -4,15 +4,16 @@ import { User } from 'src/users/entities/user.entity';
 import { DataSource } from 'typeorm';
 
 export async function registriesSeeder(datasource: DataSource): Promise<void> {
-  await datasource.query("TRUNCATE registries RESTART IDENTITY CASCADE");
+  await datasource.query('TRUNCATE registries RESTART IDENTITY CASCADE');
 
   const machineRepository = datasource.getRepository(Machine);
   const userRepository = datasource.getRepository(User);
   const registryRepository = datasource.getRepository(Registries);
 
-  // Buscar todas as máquinas e usuários
-  const machines = await machineRepository.find();
-  const users = await userRepository.find();
+  // Buscar todas as máquinas com suas fábricas
+  const machines = await machineRepository.find({ relations: ['factory'] });
+  // Buscar todos os usuários com suas fábricas
+  const users = await userRepository.find({ relations: ['factory'] });
 
   const registries: Partial<Registries>[] = [];
 
@@ -21,10 +22,22 @@ export async function registriesSeeder(datasource: DataSource): Promise<void> {
 
   // Para cada máquina, criar 5 registries em meses diferentes
   machines.forEach((machine, machineIndex) => {
-    console.log(machine)
+    // Filtrar usuários da mesma fábrica que a máquina
+    const usersInSameFactory = users.filter(
+      (user) => user.factory?.id === machine.factory?.id,
+    );
+
+    // Se não houver usuários na mesma fábrica, pular esta máquina
+    if (usersInSameFactory.length === 0) {
+      console.log(
+        `⚠ Máquina ${machine.name} não tem usuários na mesma fábrica`,
+      );
+      return;
+    }
+
     for (let i = 0; i < 5; i++) {
-      // Selecionar um usuário de forma distribuída
-      const user = users[i % users.length];
+      // Selecionar um usuário da mesma fábrica de forma distribuída
+      const user = usersInSameFactory[i % usersInSameFactory.length];
 
       // Selecionar um mês diferente para cada registry
       const month = months[(machineIndex * 5 + i) % 12];
@@ -42,7 +55,7 @@ export async function registriesSeeder(datasource: DataSource): Promise<void> {
       registries.push({
         value,
         machine: { id: machine.id } as Machine,
-        user: { id: user.id} as User,
+        user: { id: user.id } as User,
         createdAt,
       });
     }

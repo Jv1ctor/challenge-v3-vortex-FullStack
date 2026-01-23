@@ -72,9 +72,9 @@ export class ConsumptionRepository {
     const data: GetKwhByFactoriesDto[] = result.map((r) => ({
       factory_id: Number(r.factory_id),
       factory_name: r.factory_name,
-      total_kwh: Number(r.total_kwh)
-    }))
+      total_kwh: Number(r.total_kwh),
+    }));
 
-    return data
+    return data;
   }
 }

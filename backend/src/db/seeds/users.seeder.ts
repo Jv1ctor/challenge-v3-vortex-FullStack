@@ -4,7 +4,7 @@ import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
 export async function usersSeeder(datasource: DataSource): Promise<void> {
-  await datasource.query("TRUNCATE users RESTART IDENTITY CASCADE");
+  await datasource.query('TRUNCATE users RESTART IDENTITY CASCADE');
 
   const factoryRepository = datasource.getRepository(Factory);
   const userRepository = datasource.getRepository(User);
@@ -18,31 +18,31 @@ export async function usersSeeder(datasource: DataSource): Promise<void> {
   // Criar 5 usuários normais distribuídos entre as factories
   const users = [
     {
-      name: 'João Silva',
+      name: 'joão_silva',
       password: hashedPassword,
       isAdmin: false,
       factory: factories[0], // Fábrica Norte
     },
     {
-      name: 'Maria Santos',
+      name: 'maria_santos',
       password: hashedPassword,
       isAdmin: false,
       factory: factories[0], // Fábrica Norte
     },
     {
-      name: 'Pedro Oliveira',
+      name: 'pedro_oliveira',
       password: hashedPassword,
       isAdmin: false,
       factory: factories[1], // Fábrica Sul
     },
     {
-      name: 'Ana Costa',
+      name: 'ana_costa',
       password: hashedPassword,
       isAdmin: false,
       factory: factories[1], // Fábrica Sul
     },
     {
-      name: 'Carlos Souza',
+      name: 'carlos_souza',
       password: hashedPassword,
       isAdmin: false,
       factory: factories[2], // Fábrica Leste

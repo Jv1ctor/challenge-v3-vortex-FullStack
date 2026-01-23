@@ -17,13 +17,13 @@ export class Factory {
   name: string;
 
   @Column('varchar', { nullable: true })
-  address: string
+  address: string;
 
   @Column('varchar', { nullable: true })
-  city: string
+  city: string;
 
   @Column('varchar', { nullable: true })
-  country: string
+  country: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
@@ -32,5 +32,5 @@ export class Factory {
   users: User[];
 
   @OneToMany(() => Machine, (machines) => machines.factory)
-  machines: Machine[]
+  machines: Machine[];
 }
