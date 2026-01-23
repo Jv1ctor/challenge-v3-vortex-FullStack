@@ -59,7 +59,6 @@ export class MachinesController {
   @Post(':id/registries')
   @HttpCode(201)
   @Roles(Role.Operator)
-  @PlatformSelect(Platform.Mobile)
   @MachineAccess()
   async insertRegistries(
     @Param('id', ParseIntPipe) id: number,
