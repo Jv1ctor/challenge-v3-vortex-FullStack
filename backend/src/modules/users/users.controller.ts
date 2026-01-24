@@ -1,4 +1,12 @@
-import { Body, Controller, Get, HttpCode, Post, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Patch,
+  Post,
+  Req,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import {
   type CreateUserOperatorDto,
@@ -10,6 +18,10 @@ import { Role } from 'src/common/enums/role.enum';
 import { PlatformSelect } from 'src/common/decorators/platform.decorator';
 import { Platform } from 'src/common/enums/platform.enum';
 import { type Request } from 'express';
+import {
+  type UpdatePasswordDto,
+  UpdatePasswordSchema,
+} from './dtos/update-password-operator.dto';
 
 @Controller('users')
 export class UsersController {
@@ -28,5 +40,15 @@ export class UsersController {
   @Roles(Role.Operator)
   async getOperatorInfo(@Req() request: Request) {
     return await this.usersService.getOperatorInfo(request.user.id);
+  }
+
+  @Patch('operator/')
+  @Roles(Role.Admin, Role.Manager)
+  @ZodValidation(UpdatePasswordSchema)
+  async updatePassword(@Body() body: UpdatePasswordDto) {
+    return await this.usersService.updatePasswordUser(
+      body.user_id,
+      body.password,
+    );
   }
 }

@@ -15,6 +15,8 @@ import { GetMachinesByFactoryDto } from './dtos/get-machines-by-factory.dto';
 import { UpdateFactoryDto } from './dtos/update-factory.dto';
 import { UpdatedMachineDto } from './dtos/update-machine.dto';
 import { ErrorMessage } from 'src/common/enums/error-message.enum';
+import { ConfigService } from '@nestjs/config';
+import bcrypt from 'bcrypt';
 
 @Injectable()
 export class FactoriesService {
@@ -25,6 +27,7 @@ export class FactoriesService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Machine)
     private readonly machineRepository: Repository<Machine>,
+    private readonly configService: ConfigService,
   ) {}
 
   async createFactory(
@@ -45,7 +48,7 @@ export class FactoriesService {
       country,
     });
     return {
-      id: result.generatedMaps[0].id,
+      id: result.generatedMaps[0].id as number,
     };
   }
 
@@ -71,7 +74,7 @@ export class FactoriesService {
     await this.factoryRepository.update({ id: factoryId }, { ...factory });
   }
 
-  async registerUser(factoryId: number, userId: string) {
+  async addUserInFactory(factoryId: number, userId: string) {
     const factory = await this.factoryRepository.findOneBy({ id: factoryId });
 
     if (!factory) throw new NotFoundException(ErrorMessage.FACTORY_NOT_FOUND);
@@ -94,6 +97,37 @@ export class FactoriesService {
       { id: userId },
       { factory: { id: factoryId } },
     );
+  }
+
+  async registerUserInFactory(
+    factoryId: number,
+    username: string,
+    password: string,
+  ) {
+    const factory = await this.factoryRepository.findOneBy({ id: factoryId });
+
+    if (!factory) throw new NotFoundException(ErrorMessage.FACTORY_NOT_FOUND);
+
+    const existUser = await this.userRepository.findOne({
+      where: {
+        name: username,
+      },
+      relations: { factory: true },
+    });
+
+    if (existUser)
+      throw new ConflictException(ErrorMessage.USERNAME_ALREADY_EXISTS);
+
+    const saltRounds = Number(
+      this.configService.get<number>('BCRYPT_SALT_ROUNDS', 10),
+    );
+    const hashedPass = await bcrypt.hash(password, saltRounds);
+
+    await this.userRepository.insert({
+      name: username,
+      password: hashedPass,
+      factory: { id: factoryId },
+    });
   }
 
   async getAllFactories(): Promise<FactoriesMinDto[]> {
@@ -125,12 +159,15 @@ export class FactoriesService {
   async getAllUserByFactory(factoryId: number): Promise<UsersByFactoryDto[]> {
     return await this.userRepository
       .createQueryBuilder('users')
-      .innerJoin('registries', 'r', ' r.user_id = users.id')
-      .innerJoin('machines', 'm', 'm.id = r.machine_id')
+      .leftJoin('registries', 'r', ' r.user_id = users.id')
+      .leftJoin('machines', 'm', 'm.id = r.machine_id')
       .select(['users.id AS id', 'users.name AS name'])
       .addSelect('COUNT(r.id)::int', 'total_registries')
-      .addSelect('MAX(r.created_at)', 'last_registry_at')
-      .where('m.factory_id = :factoryId', { factoryId })
+      .addSelect(
+        'MAX(r.created_at) FILTER (WHERE r.id IS NOT NULL)',
+        'last_registry_at',
+      )
+      .where('users.factory_id = :factoryId', { factoryId })
       .groupBy('users.id')
       .addGroupBy('users.name')
       .getRawMany<UsersByFactoryDto>();
@@ -192,22 +229,16 @@ export class FactoriesService {
   }
 
   async updateMachine(
-    factoryId: number, // 2
-    machineId: number, // 1
+    factoryId: number,
+    machineId: number,
     machine: UpdatedMachineDto,
   ) {
-    const existMachine = await this.machineRepository.find({
-      where: {
-        factory: {
-          id: factoryId,
-        },
-        id: Not(machineId),
-        name: machine.name,
-      },
-      relations: {
-        factory: true,
-      },
+    const existMachine = await this.machineRepository.findOneBy({
+      name: machine.name,
     });
+
+    if (existMachine)
+      throw new ConflictException(ErrorMessage.MACHINE_NAME_ALREADY_EXISTS);
 
     const existMachineInFactory = await this.machineRepository.findOne({
       where: {
@@ -219,11 +250,6 @@ export class FactoriesService {
     if (!existMachineInFactory) {
       throw new NotFoundException(ErrorMessage.MACHINE_NOT_FOUND_IN_FACTORY);
     }
-
-    if (existMachine.length > 0)
-      throw new ConflictException(
-        ErrorMessage.MACHINE_NAME_USED_IN_OTHER_FACTORY,
-      );
 
     await this.machineRepository.update({ id: machineId }, { ...machine });
   }

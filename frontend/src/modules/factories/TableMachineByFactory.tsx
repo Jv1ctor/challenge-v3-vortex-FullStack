@@ -1,16 +1,15 @@
-import { TableData } from "@/components/TableData"
-import { Button } from "@/components/ui/button"
-import { TableCell, TableHead, TableRow } from "@/components/ui/table"
-import { Tooltip } from "@/components/ui/tooltip"
-import { TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { TableData } from "@/shared/components/TableData"
+import { Button } from "@/shared/components/ui/button"
+import { TableCell, TableHead, TableRow } from "@/shared/components/ui/table"
+import { Tooltip } from "@/shared/components/ui/tooltip"
+import { TooltipContent, TooltipTrigger } from "@/shared/components/ui/tooltip"
 import { NotebookPen, SquarePen } from "lucide-react"
 import { NavLink, useLoaderData, useRevalidator } from "react-router"
 import type { MachinesByFactory } from "./types/machines-by-factories.type"
 import { FormMachine } from "./forms/FormMachine"
 import type { MachineFormData } from "./schemas/machine.schema"
-import { FormSheet } from "@/components/sheet/FormSheet"
-import { useHandleFormTable } from "@/hooks/handle-form-table.hooks"
-import { SheetTrigger } from "@/components/ui/sheet"
+import { useHandleFormTable } from "@/shared/hooks/handle-form-table.hooks"
+import { SheetTrigger } from "@/shared/components/ui/sheet"
 import { useAuth } from "../auth/hooks/auth.hook"
 import { FactoriesService } from "./services/factories.service"
 
@@ -30,13 +29,11 @@ export const TableMachineByFactory = () => {
   } = useHandleFormTable<MachineFormData>()
 
   const handleSubmit = async (formData: MachineFormData) => {
-    console.log("enviou")
-    // TODO: mensagem informando que aconteceu algum erro ou redirect para login.
     if (!token) return
     const result = await FactoriesService.createMachineInFactory(
       token,
       data.id,
-      formData
+      formData,
     )
 
     if (result) {
@@ -47,12 +44,12 @@ export const TableMachineByFactory = () => {
 
   const handleEditSubmit = async (formData: MachineFormData) => {
     if (!token) return
-    if (!idRef) return
+    if (!idRef || typeof idRef !== "number") return
     const result = await FactoriesService.updateMachineInFactory(
       token,
       data.id,
       idRef,
-      formData
+      formData,
     )
 
     if (result) {
@@ -71,28 +68,15 @@ export const TableMachineByFactory = () => {
         buttonLabel="Cadastrar Maquina"
         tableCaption="Listagem das Unidades"
         sheetContent={
-          activeForm === "create" ? (
-            <FormSheet
-              formRef="machine-form"
-              formContent={<FormMachine onSubmit={handleSubmit} />}
-              buttonContent="Cadastrar Máquina"
-              title="Nova Máquina"
-              description="Preencha os dados para cadastrar uma nova máquina"
-            />
-          ) : activeForm === "edit" ? (
-            <FormSheet
-              formRef="machine-form"
-              formContent={
-                <FormMachine
-                  onSubmit={handleEditSubmit}
-                  initialData={selectedData}
-                />
+          activeForm && (
+            <FormMachine
+              type={activeForm}
+              initialData={selectedData}
+              onSubmit={
+                activeForm === "create" ? handleSubmit : handleEditSubmit
               }
-              buttonContent="Editar"
-              title="Editar Máquina"
-              description="Preencha os dados para editar a máquina escolhida"
             />
-          ) : null
+          )
         }
         tableRowHeader={
           <>
@@ -169,7 +153,7 @@ export const TableMachineByFactory = () => {
                               manufacturer: it.manufacturer ?? "",
                               model: it.model ?? "",
                             },
-                            it.id
+                            it.id,
                           )
                         }
                         className="bg-muted text-muted-foreground cursor-pointer hover:bg-primary hover:text-primary-foreground"

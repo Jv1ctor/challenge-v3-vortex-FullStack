@@ -3,7 +3,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
-} from "@/components/ui/chart"
+} from "@/shared/components/ui/chart"
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts"
 
 export const DashboardPage = () => {
@@ -64,7 +64,7 @@ export const DashboardPage = () => {
       console.log(date)
       const month = new Intl.DateTimeFormat("pt-br", {
         month: "short",
-        year: "2-digit"
+        year: "2-digit",
       }).format(date)
       return {
         month,
@@ -76,7 +76,7 @@ export const DashboardPage = () => {
   const chartConfig = {
     value: {
       label: "kWh",
-      color: "--chart-1"
+      color: "--chart-1",
     },
   } satisfies ChartConfig
 

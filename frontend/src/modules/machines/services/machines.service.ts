@@ -1,4 +1,4 @@
-import { formatDate } from "@/lib/formatted-date"
+import { formatDate } from "@/shared/lib/formatted-date"
 import type { Registries } from "../types/registries.type"
 
 type ResponseApiGetRegistriesByMachine = {
@@ -16,7 +16,7 @@ export const MachineService = {
           Authorization: `Bearer ${token}`,
         },
         credentials: "include",
-      }
+      },
     )
 
     if (!response.ok) {
@@ -25,7 +25,7 @@ export const MachineService = {
     }
 
     const result: ResponseApiGetRegistriesByMachine = await response.json()
-  
+
     return result.data.map((it) => ({
       ...it,
       createdAt: formatDate(it.createdAt),

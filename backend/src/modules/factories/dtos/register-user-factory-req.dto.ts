@@ -1,7 +1,7 @@
 import { ErrorMessage } from 'src/common/enums/error-message.enum';
 import z from 'zod';
 
-export const CreateUserOperatorSchema = z
+export const RegisterUserFactorySchema = z
   .object({
     username: z
       .string()
@@ -17,4 +17,4 @@ export const CreateUserOperatorSchema = z
   })
   .required();
 
-export type CreateUserOperatorDto = z.infer<typeof CreateUserOperatorSchema>;
+export type RegisUserFactoryDto = z.infer<typeof RegisterUserFactorySchema>;
