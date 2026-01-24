@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -107,5 +106,18 @@ export class UsersService {
       name,
       password: hashedPass,
     });
+  }
+
+  async updatePasswordUser(userId: string, password: string) {
+    const existUser = await this.userRepository.findOneBy({ id: userId });
+
+    if (!existUser) throw new NotFoundException(ErrorMessage.USER_NOT_FOUND);
+
+    const saltRounds = Number(
+      this.configService.get<number>('BCRYPT_SALT_ROUNDS', 10),
+    );
+    const hashedPass = await bcrypt.hash(password, saltRounds);
+
+    await this.userRepository.update({ id: userId }, { password: hashedPass });
   }
 }

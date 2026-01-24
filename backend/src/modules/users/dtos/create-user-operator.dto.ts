@@ -6,14 +6,14 @@ export const CreateUserOperatorSchema = z
     username: z
       .string()
       .max(50)
-      .min(4)
+      .min(7)
       .nonempty()
       .trim()
       .normalize('NFC')
       .toLowerCase()
       .regex(/^[\p{L}\p{N}._-]+$/u, ErrorMessage.FIELD_INVALID)
       .nonoptional(),
-    password: z.string().nonempty().nonoptional(),
+    password: z.string().min(8).nonempty().nonoptional(),
   })
   .required();
 
