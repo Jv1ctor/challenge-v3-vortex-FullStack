@@ -1,29 +1,18 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Registries } from './entities/registries.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Machine } from 'src/modules/machines/entities/machine.entity';
-import { RegistriesDto } from './dtos/registries.dto';
 import { ErrorMessage } from 'src/common/enums/error-message.enum';
+import { RegistriesDto } from './dtos/registries.dto';
 
 @Injectable()
 export class RegistriesService {
   constructor(
     @InjectRepository(Registries)
     private readonly registryRepository: Repository<Registries>,
-    @InjectRepository(Machine)
-    private readonly machineRepository: Repository<Machine>,
   ) {}
 
   async insertRegistry(machineId: number, userId: string, value: number) {
-    const existMachine = await this.machineRepository.findOne({
-      where: { id: machineId },
-      relations: { factory: true },
-    });
-
-    if (!existMachine)
-      throw new NotFoundException(ErrorMessage.MACHINE_NOT_FOUND);
-
     await this.registryRepository.insert({
       machine: {
         id: machineId,
@@ -36,13 +25,6 @@ export class RegistriesService {
   }
 
   async getAllRegistriesByMachine(machineId: number): Promise<RegistriesDto[]> {
-    const existMachine = await this.machineRepository.findOneBy({
-      id: machineId,
-    });
-
-    if (!existMachine)
-      throw new NotFoundException(ErrorMessage.MACHINE_NOT_FOUND);
-
     return this.registryRepository.find({
       where: {
         machine: {
