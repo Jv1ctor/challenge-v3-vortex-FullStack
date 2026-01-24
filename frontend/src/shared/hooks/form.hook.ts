@@ -1,7 +1,8 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import type z from "zod"
 import { ZodError } from "zod"
 import { isResponseErrors } from "../types/response-errors.type"
+import { shallowEqual } from "../lib/shallow-equals-obj"
 
 type Params<T> = {
   initialData: T
@@ -17,6 +18,16 @@ export const useForm = <T>({
   const [formData, setFormData] = useState<T>(initialData)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [fetchError, setFetchError] = useState<string>("")
+  const lastInitialRef = useRef<T | null>(null)
+
+  useEffect(() => {
+    if (!shallowEqual(lastInitialRef.current, initialData)) {
+      setFormData(initialData)
+      setErrors({})
+      setFetchError("")
+      lastInitialRef.current = initialData
+    }
+  }, [initialData])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -27,15 +38,14 @@ export const useForm = <T>({
       await onSubmit(validatedData)
       setFormData(initialData)
     } catch (error) {
-      
-      if(isResponseErrors(error)){
-        if(typeof error.message === "string"){
+      if (isResponseErrors(error)) {
+        if (typeof error.message === "string") {
           setFetchError(error.message)
           return
-        }        
+        }
         const newErrors: Record<string, string> = {}
-        error.message.forEach( it => { 
-          it.errors.forEach( e => {
+        error.message.forEach((it) => {
+          it.errors.forEach((e) => {
             newErrors[it.field] = e
           })
         })
@@ -67,5 +77,5 @@ export const useForm = <T>({
     }
   }
 
-  return { formData, handleSubmit, handleChange, errors, fetchError}
+  return { formData, handleSubmit, handleChange, errors, fetchError }
 }
