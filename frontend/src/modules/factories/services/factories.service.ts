@@ -1,20 +1,18 @@
 import { formatDate } from "@/shared/lib/formatted-date"
 import type { Factories } from "../types/factories.type"
 import type { MachinesByFactory } from "../types/machines-by-factories.type"
-import type { UsersByFactories } from "../types/users-by-factories.type"
 import type { FactoryFormData } from "../schemas/factory.schema"
 import type { MachineFormData } from "../schemas/machine.schema"
 import type { ResponseErrors } from "@/shared/types/response-errors.type"
+import type { UserFormData } from "../schemas/users.schema"
+import type { UsersByFactories } from "../types/users-by-factories.type"
+import type { UpdateUser } from "../types/update-user.type"
 
 type ResponseApiGetAllFactories = {
   data: Factories[]
 }
 
 type ResponseApiGetMachinesByFactories = MachinesByFactory
-
-type ResponseApiGetUsersByFactories = {
-  data: UsersByFactories[]
-}
 
 export const FactoriesService = {
   async getAllFactories(token: string): Promise<Factories[] | null> {
@@ -78,7 +76,7 @@ export const FactoriesService = {
   async getAllUsersByFactories(
     token: string,
     factoryId: number,
-  ): Promise<UsersByFactories[]> {
+  ): Promise<UsersByFactories> {
     const response = await fetch(
       `http://localhost:4000/api/factories/${factoryId}/user`,
       {
@@ -96,14 +94,17 @@ export const FactoriesService = {
       throw response
     }
 
-    const result: ResponseApiGetUsersByFactories = await response.json()
+    const result: UsersByFactories = await response.json()
 
     const formatted = result.data.map((it) => ({
       ...it,
-      last_registry_at: formatDate(it.last_registry_at),
+      last_registry_at: it.last_registry_at ? formatDate(it.last_registry_at) : null,
     }))
 
-    return formatted
+    return {
+      ...result,
+      data: formatted,
+    }
   },
 
   async createFactory(
@@ -182,7 +183,6 @@ export const FactoriesService = {
       throw result
     }
 
-   
     return true
   },
 
@@ -217,4 +217,58 @@ export const FactoriesService = {
       return false
     }
   },
+
+  async createUserInFactory(
+    token: string,
+    factoryId: number,
+    body: UserFormData,
+  ) {
+    const response = await fetch(
+      `http://localhost:4000/api/factories/${factoryId}/user`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+        credentials: "include",
+      },
+    )
+
+    if (!response.ok) {
+      console.log(`RESPONSE STATUS: ${response.status}`)
+      const result: ResponseErrors = await response.json()
+      throw result
+    }
+
+    return true
+  },
+
+  async updateUserInFactory(
+    token: string,
+    body: UpdateUser,
+  ) {
+    const response = await fetch(
+      `http://localhost:4000/api/users/operator`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+        credentials: "include",
+      },
+    )
+
+    if (!response.ok) {
+      console.log(`RESPONSE STATUS: ${response.status}`)
+      const result: ResponseErrors = await response.json()
+      throw result
+    }
+
+    return true
+  },
+  
 }
