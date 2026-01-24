@@ -16,9 +16,9 @@ import {
   CreateFactoryReqSchema,
 } from './dtos/create-factory-req.dto';
 import {
-  type RegisterUserReqDto,
-  RegisterUserReqSchema,
-} from './dtos/register-user-req-dto';
+  type AddUserFactoryReqDto,
+  AddUserFactoryReqSchema,
+} from './dtos/add-user-factory-req-dto';
 import { CreateFactoryResDto } from './dtos/create-factory-res.dto';
 import { ZodValidationPipe } from 'src/common/pipes/zod-validation.pipe';
 import { FactoriesMinDto } from './dtos/factories-min.dto';
@@ -40,6 +40,10 @@ import {
   type UpdatedMachineDto,
   UpdatedMachineSchema,
 } from './dtos/update-machine.dto';
+import {
+  RegisterUserFactorySchema,
+  type RegisUserFactoryDto,
+} from './dtos/register-user-factory-req.dto';
 
 @Controller('factories')
 export class FactoriesController {
@@ -90,12 +94,28 @@ export class FactoriesController {
   @HttpCode(202)
   @PlatformSelect(Platform.Web)
   @Roles(Role.Manager, Role.Admin)
-  async registerUsers(
+  async addUserInFactory(
     @Param('id', ParseIntPipe) factoryId: number,
-    @Body(new ZodValidationPipe(RegisterUserReqSchema))
-    body: RegisterUserReqDto,
+    @Body(new ZodValidationPipe(AddUserFactoryReqSchema))
+    body: AddUserFactoryReqDto,
   ) {
-    await this.factoryService.registerUser(factoryId, body.user_id);
+    await this.factoryService.addUserInFactory(factoryId, body.user_id);
+  }
+
+  @Post(':id/user')
+  @HttpCode(201)
+  @PlatformSelect(Platform.Web)
+  @Roles(Role.Manager, Role.Admin)
+  async createUserInFactory(
+    @Param('id', ParseIntPipe) factoryId: number,
+    @Body(new ZodValidationPipe(RegisterUserFactorySchema))
+    body: RegisUserFactoryDto,
+  ) {
+    await this.factoryService.registerUserInFactory(
+      factoryId,
+      body.username,
+      body.password,
+    );
   }
 
   @Get()
