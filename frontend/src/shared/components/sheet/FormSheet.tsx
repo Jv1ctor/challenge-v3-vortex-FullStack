@@ -10,7 +10,7 @@ import { Button } from "@/shared/components/ui/button"
 import type { ReactNode } from "react"
 
 type Props = {
-  formContent: ReactNode
+  children: ReactNode
   formRef: string
   buttonContent: string
   title: string
@@ -19,7 +19,7 @@ type Props = {
 
 export const FormSheet = ({
   formRef,
-  formContent,
+  children,
   buttonContent,
   title,
   description,
@@ -31,9 +31,7 @@ export const FormSheet = ({
           <SheetTitle>{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
-        <div className="grid flex-1 auto-rows-min gap-6 px-4">
-          {formContent}
-        </div>
+        <div className="grid flex-1 auto-rows-min gap-6 px-4">{children}</div>
         <SheetFooter>
           <Button type="submit" form={formRef}>
             {buttonContent}
