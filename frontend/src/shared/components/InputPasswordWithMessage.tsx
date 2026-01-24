@@ -13,12 +13,16 @@ type Props = {
   value: string
   setValue: (value: string) => void
   isError?: boolean
+  messageError?: string
+  placeholder?: string
 }
 
 export const InputPasswordWithMessage = ({
   value,
   setValue,
   isError = false,
+  messageError = "Usuario ou senha invalidos",
+  placeholder = "Insira sua Senha",
 }: Props) => {
   const [isVisible, setIsVisible] = useState(false)
 
@@ -30,10 +34,10 @@ export const InputPasswordWithMessage = ({
     <>
       <div className="flex flex-col gap-2">
         <Label htmlFor="password">Senha:</Label>
-        <InputGroup className="py-5">
+        <InputGroup className={`py-5 ${isError ? "border-destructive" : ""}`}>
           <InputGroupInput
             type={isVisible ? "text" : "password"}
-            placeholder="Insira sua senha"
+            placeholder={placeholder}
             name="password"
             id="password"
             value={value}
@@ -52,9 +56,7 @@ export const InputPasswordWithMessage = ({
         </InputGroup>
 
         {isError && (
-          <p className="text-xs ml-3 text-destructive">
-            Usuario ou Senha invalidos
-          </p>
+          <p className="text-xs ml-3 text-destructive">{messageError}</p>
         )}
       </div>
     </>
