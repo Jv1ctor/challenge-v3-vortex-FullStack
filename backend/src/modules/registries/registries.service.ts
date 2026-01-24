@@ -1,15 +1,9 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Registries } from './entities/registries.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Machine } from 'src/modules/machines/entities/machine.entity';
-import { User } from 'src/modules/users/entities/user.entity';
 import { RegistriesDto } from './dtos/registries.dto';
-import { Factory } from 'src/modules/factories/entities/factory.entity';
 import { ErrorMessage } from 'src/common/enums/error-message.enum';
 
 @Injectable()

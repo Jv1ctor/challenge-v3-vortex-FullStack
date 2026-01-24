@@ -10,10 +10,12 @@ import { RolesGuard } from './guards/role.guard';
 import { FactoryAccessGuard } from './guards/factory-accesss.guard';
 import { PlatformGuard } from './guards/platform.guard';
 import { MachineAccessGuard } from './guards/machine-access.guard';
+import { MachinesModule } from '../machines/machines.module';
 
 @Module({
   imports: [
     UsersModule,
+    MachinesModule,
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),

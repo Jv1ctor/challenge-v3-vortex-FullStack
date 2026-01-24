@@ -10,17 +10,17 @@ import { GetUserWithPasswordDto } from './dtos/get-user-with-password.dto';
 import bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { GetUserWithFactoryDto } from './dtos/get-user-with-factory.dto';
-import { Machine } from 'src/modules/machines/entities/machine.entity';
 import { GetOperatorInfo } from './dtos/get-operator-info.dto';
 import { ErrorMessage } from 'src/common/enums/error-message.enum';
+import { UsersByFactoryDto } from './dtos/users-by-factory.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(Machine)
-    private readonly machineRepository: Repository<Machine>,
+    // @InjectRepository(Machine)
+    // private readonly machineRepository: Repository<Machine>,
     private readonly configService: ConfigService,
   ) {}
 
@@ -82,15 +82,6 @@ export class UsersService {
     return !!relation;
   }
 
-  async belongsFactoryByMachine(
-    machineId: number,
-    userId: string,
-  ): Promise<boolean> {
-    const relation = await this.machineRepository.findOne({
-      where: { id: machineId, factory: { users: { id: userId } } },
-    });
-    return !!relation;
-  }
   async createUserOperator(name: string, password: string) {
     const existUsername = await this.userRepository.findOneBy({ name });
 
@@ -119,5 +110,70 @@ export class UsersService {
     const hashedPass = await bcrypt.hash(password, saltRounds);
 
     await this.userRepository.update({ id: userId }, { password: hashedPass });
+  }
+
+  async addUserInFactory(factoryId: number, userId: string) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+      relations: { factory: true },
+    });
+
+    if (!user) throw new NotFoundException(ErrorMessage.USER_NOT_FOUND);
+
+    if (user.factory !== null && user.factory.id)
+      throw new ConflictException(
+        ErrorMessage.USER_ALREADY_ASSIGNED_TO_FACTORY,
+      );
+
+    await this.userRepository.update(
+      { id: userId },
+      { factory: { id: factoryId } },
+    );
+  }
+
+  async getAllUserByFactory(factoryId: number): Promise<UsersByFactoryDto[]> {
+    return await this.userRepository
+      .createQueryBuilder('users')
+      .leftJoin('registries', 'r', ' r.user_id = users.id')
+      .leftJoin('machines', 'm', 'm.id = r.machine_id')
+      .select(['users.id AS id', 'users.name AS name'])
+      .addSelect('COUNT(r.id)::int', 'total_registries')
+      .addSelect(
+        'MAX(r.created_at) FILTER (WHERE r.id IS NOT NULL)',
+        'last_registry_at',
+      )
+      .where('users.factory_id = :factoryId', { factoryId })
+      .groupBy('users.id')
+      .addGroupBy('users.name')
+      .getRawMany<UsersByFactoryDto>();
+  }
+
+  async registerUserInFactory(
+    factoryId: number,
+    username: string,
+    password: string,
+  ) {
+    const existUser = await this.userRepository.findOne({
+      where: {
+        name: username,
+      },
+      relations: { factory: true },
+    });
+
+    if (existUser)
+      throw new ConflictException(ErrorMessage.USERNAME_ALREADY_EXISTS);
+
+    const saltRounds = Number(
+      this.configService.get<number>('BCRYPT_SALT_ROUNDS', 10),
+    );
+    const hashedPass = await bcrypt.hash(password, saltRounds);
+
+    await this.userRepository.insert({
+      name: username,
+      password: hashedPass,
+      factory: { id: factoryId },
+    });
   }
 }

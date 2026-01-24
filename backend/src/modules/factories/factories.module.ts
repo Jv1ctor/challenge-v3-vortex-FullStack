@@ -3,11 +3,11 @@ import { FactoriesController } from './factories.controller';
 import { FactoriesService } from './factories.service';
 import { Factory } from './entities/factory.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/modules/users/entities/user.entity';
-import { Machine } from 'src/modules/machines/entities/machine.entity';
+import { MachinesModule } from '../machines/machines.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Factory, User, Machine])],
+  imports: [TypeOrmModule.forFeature([Factory]), MachinesModule, UsersModule],
   controllers: [FactoriesController],
   providers: [FactoriesService],
 })

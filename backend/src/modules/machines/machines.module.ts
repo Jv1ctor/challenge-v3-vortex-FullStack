@@ -7,6 +7,7 @@ import { RegistriesModule } from 'src/modules/registries/registries.module';
 
 @Module({
   imports: [RegistriesModule, TypeOrmModule.forFeature([Machine])],
+  exports: [MachinesService],
   controllers: [MachinesController],
   providers: [MachinesService],
 })

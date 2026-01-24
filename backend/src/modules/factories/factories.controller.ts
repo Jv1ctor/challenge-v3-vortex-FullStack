@@ -22,10 +22,6 @@ import {
 import { CreateFactoryResDto } from './dtos/create-factory-res.dto';
 import { ZodValidationPipe } from 'src/common/pipes/zod-validation.pipe';
 import { FactoriesMinDto } from './dtos/factories-min.dto';
-import {
-  type CreateMachineReqDto,
-  CreateMachineReqSchema,
-} from './dtos/create-machine-req.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/enums/role.enum';
 import { FactoryAccess } from 'src/common/decorators/factory-access.decorator';
@@ -36,18 +32,28 @@ import {
   type UpdateFactoryDto,
   UpdateFactorySchema,
 } from './dtos/update-factory.dto';
+import { MachinesService } from '../machines/machines.service';
 import {
   type UpdatedMachineDto,
   UpdatedMachineSchema,
-} from './dtos/update-machine.dto';
+} from '../machines/dtos/update-machine.dto';
+import { UsersService } from '../users/users.service';
 import {
   RegisterUserFactorySchema,
   type RegisUserFactoryDto,
 } from './dtos/register-user-factory-req.dto';
+import {
+  type CreateMachineReqDto,
+  CreateMachineReqSchema,
+} from './dtos/create-machine-req.dto';
 
 @Controller('factories')
 export class FactoriesController {
-  constructor(private readonly factoryService: FactoriesService) {}
+  constructor(
+    private readonly factoryService: FactoriesService,
+    private readonly machineService: MachinesService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @Post()
   @ZodValidation(CreateFactoryReqSchema)
@@ -87,6 +93,7 @@ export class FactoriesController {
     @Param('id', ParseIntPipe) id: number,
     @Body(new ZodValidationPipe(UpdateFactorySchema)) body: UpdateFactoryDto,
   ) {
+    await this.factoryService.getFactoryInfo(id);
     await this.factoryService.updateFactory(id, body);
   }
 
@@ -99,19 +106,21 @@ export class FactoriesController {
     @Body(new ZodValidationPipe(AddUserFactoryReqSchema))
     body: AddUserFactoryReqDto,
   ) {
-    await this.factoryService.addUserInFactory(factoryId, body.user_id);
+    await this.factoryService.getFactoryInfo(factoryId);
+    await this.usersService.addUserInFactory(factoryId, body.user_id);
   }
 
   @Post(':id/user')
   @HttpCode(201)
   @PlatformSelect(Platform.Web)
   @Roles(Role.Manager, Role.Admin)
-  async createUserInFactory(
+  async registerUserInFactory(
     @Param('id', ParseIntPipe) factoryId: number,
     @Body(new ZodValidationPipe(RegisterUserFactorySchema))
     body: RegisUserFactoryDto,
   ) {
-    await this.factoryService.registerUserInFactory(
+    await this.factoryService.getFactoryInfo(factoryId);
+    await this.usersService.registerUserInFactory(
       factoryId,
       body.username,
       body.password,
@@ -136,7 +145,7 @@ export class FactoriesController {
       id: factory.id,
       name: factory.name,
       created_at: factory,
-      data: await this.factoryService.getAllUserByFactory(factoryId),
+      data: await this.usersService.getAllUserByFactory(factoryId),
     };
   }
 
@@ -148,7 +157,7 @@ export class FactoriesController {
       id: factory.id,
       name: factory.name,
       created_at: factory.createdAt,
-      data: await this.factoryService.getAllMachinesByFactory(factoryId),
+      data: await this.machineService.getAllMachinesByFactory(factoryId),
     };
   }
 
@@ -161,7 +170,8 @@ export class FactoriesController {
     @Body(new ZodValidationPipe(CreateMachineReqSchema))
     body: CreateMachineReqDto,
   ) {
-    await this.factoryService.insertMachine(factoryId, body);
+    await this.factoryService.getFactoryInfo(factoryId);
+    await this.machineService.insertMachine(factoryId, body);
   }
 
   @Put(':factoryId/machines/:machineId')
@@ -172,6 +182,7 @@ export class FactoriesController {
     @Param('machineId', ParseIntPipe) machineId: number,
     @Body(new ZodValidationPipe(UpdatedMachineSchema)) body: UpdatedMachineDto,
   ) {
-    await this.factoryService.updateMachine(factoryId, machineId, body);
+    await this.factoryService.getFactoryInfo(factoryId);
+    await this.machineService.updateMachine(factoryId, machineId, body);
   }
 }
