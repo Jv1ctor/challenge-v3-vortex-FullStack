@@ -7,17 +7,77 @@ import {
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip"
 import { SquarePen } from "lucide-react"
-import { useLoaderData } from "react-router"
+import { useLoaderData, useRevalidator } from "react-router"
 import type { UsersByFactories } from "./types/users-by-factories.type"
+import { useHandleFormTable } from "@/shared/hooks/handle-form-table.hooks"
+import type { UserFormData } from "./schemas/users.schema"
+import { FormUser } from "./forms/FormUser"
+import { useAuth } from "../auth/hooks/auth.hook"
+import { FactoriesService } from "./services/factories.service"
 
 export const TableUserByFactory = () => {
-  const data = useLoaderData() as UsersByFactories[]
+  const data = useLoaderData() as UsersByFactories
+  const { revalidate } = useRevalidator()
+  const { token } = useAuth()
+  const {
+    activeForm,
+    closeForm,
+    open,
+    idRef,
+    setOpen,
+    openCreateForm,
+    openEditForm,
+    selectedData,
+  } = useHandleFormTable<UserFormData>()
+
+  const handleSubmit = async (formData: UserFormData) => {
+    if (!token) return
+    const result = await FactoriesService.createUserInFactory(
+      token,
+      data.id,
+      formData,
+    )
+
+    if (result) {
+      revalidate()
+      closeForm()
+    }
+  }
+
+  const handleEditSubmit = async (formData: UserFormData) => {
+    if (!token) return
+    if (!idRef || typeof idRef !== "string") return
+    const result = await FactoriesService.updateUserInFactory(token, {
+      user_id: idRef,
+      password: formData.password,
+    })
+
+    if (result) {
+      revalidate()
+      closeForm()
+    }
+  }
 
   return (
     <>
       <TableData
-        title={"Listagem de Operadores na {FABRICA}"}
+        title={`Listagem de Operadores na ${data.name}`}
         tableCaption="Listagem de Operadores"
+        buttonLabel="Cadastrar Usuario"
+        openSheet={open}
+        onOpenSheet={setOpen}
+        setForms={() => openCreateForm()}
+        sheetContent={
+          activeForm && (
+            <FormUser
+              type={activeForm}
+              initialData={selectedData}
+              onSubmit={
+                activeForm === "create" ? handleSubmit : handleEditSubmit
+              }
+            />
+          )
+        }
         tableRowHeader={
           <>
             <TableRow>
@@ -36,11 +96,11 @@ export const TableUserByFactory = () => {
             </TableRow>
           </>
         }
-        tableRowBody={data.map((it) => (
+        tableRowBody={data.data.map((it) => (
           <TableRow key={it.id}>
             <TableCell>{it.name}</TableCell>
             <TableCell>{it.total_registries}</TableCell>
-            <TableCell>{it.last_registry_at}</TableCell>
+            <TableCell>{it.last_registry_at ?? "sem registro"}</TableCell>
             <TableCell>
               <div className="flex gap-5 justify-end">
                 <Tooltip>
@@ -48,6 +108,15 @@ export const TableUserByFactory = () => {
                     <Button
                       variant="ghost"
                       size="icon"
+                      onClick={() => {
+                        openEditForm(
+                          {
+                            username: it.name,
+                            password: "",
+                          },
+                          it.id,
+                        )
+                      }}
                       className="bg-muted text-muted-foreground cursor-pointer hover:bg-primary hover:text-primary-foreground"
                     >
                       <SquarePen />

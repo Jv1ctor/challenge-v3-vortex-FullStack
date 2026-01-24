@@ -3,12 +3,13 @@ import { useState } from "react"
 export const useHandleFormTable = <T>() => {
   const [activeForm, setActiveForm] = useState<"create" | "edit" | null>(null)
   const [selectedData, setSelectedData] = useState<T | null>(null)
-  const [idRef, setIdRef] = useState<number | null>(null)
+  const [idRef, setIdRef] = useState<number | string | null>(null)
   const [open, setOpen] = useState<boolean>(false)
 
-  const openEditForm = (data: T, id?: number) => {
+  const openEditForm = (data: T, id?: number | string) => {
+    if (!id) return
+    setIdRef(id)
     setSelectedData(data)
-    if (id) setIdRef(id)
     setActiveForm("edit")
     setOpen(true)
   }
@@ -19,6 +20,8 @@ export const useHandleFormTable = <T>() => {
   }
 
   const closeForm = () => {
+    setSelectedData(null)
+    setIdRef(null)
     setOpen(false)
   }
 

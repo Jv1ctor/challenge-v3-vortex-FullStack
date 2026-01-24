@@ -11,7 +11,6 @@ import { NavLink, useLoaderData, useRevalidator } from "react-router"
 import type { Factories } from "./types/factories.type"
 import { FormFactory } from "./forms/FormFactory"
 import type { FactoryFormData } from "./schemas/factory.schema"
-import { FormSheet } from "@/shared/components/sheet/FormSheet"
 import { SheetTrigger } from "@/shared/components/ui/sheet"
 import { useHandleFormTable } from "@/shared/hooks/handle-form-table.hooks"
 import { FactoriesService } from "./services/factories.service"
@@ -43,7 +42,7 @@ export const TableFactories = () => {
 
   const handleEditSubmit = async (formData: FactoryFormData) => {
     if (!token) return
-    if (!idRef) return
+    if (!idRef || typeof idRef !== "number") return
     const result = await FactoriesService.updateFactory(token, idRef, formData)
 
     if (result) {
@@ -62,28 +61,15 @@ export const TableFactories = () => {
         setForms={() => openCreateForm()}
         tableCaption="Listagem das Unidades"
         sheetContent={
-          activeForm === "create" ? (
-            <FormSheet
-              formRef="factory-form"
-              formContent={<FormFactory onSubmit={handleSubmit} />}
-              buttonContent="Cadastrar Fábrica"
-              title="Nova Fábrica"
-              description="Preencha os dados para cadastrar uma nova fábrica"
-            />
-          ) : activeForm == "edit" ? (
-            <FormSheet
-              formRef="factory-form"
-              formContent={
-                <FormFactory
-                  onSubmit={handleEditSubmit}
-                  initialData={selectedData}
-                />
+          activeForm && (
+            <FormFactory
+              type={activeForm}
+              initialData={selectedData}
+              onSubmit={
+                activeForm === "create" ? handleSubmit : handleEditSubmit
               }
-              buttonContent="Salvar"
-              title="Editar Fabrica"
-              description="Preencha os dados para editar a fábrica"
             />
-          ) : null
+          )
         }
         tableRowHeader={
           <TableRow>
