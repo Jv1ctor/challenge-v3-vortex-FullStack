@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Param,
@@ -72,11 +73,19 @@ export class MachinesController {
     body: InsertRegistriesByMachineDto,
     @Req() request: Request,
   ) {
-    await this.machineService.getMachine(id);
+    const machine = await this.machineService.getMachine(id);
     await this.registriesService.insertRegistry(
       id,
+      machine.factory.id,
       request.user.id,
       body.value,
     );
+  }
+
+  @Delete(':id')
+  @HttpCode(202)
+  @Roles(Role.Admin, Role.Manager)
+  async disableMachine(@Param('id', ParseIntPipe) id: number) {
+    await this.machineService.disableMachine(id);
   }
 }
