@@ -1,3 +1,4 @@
+import { Factory } from 'src/modules/factories/entities/factory.entity';
 import { Machine } from 'src/modules/machines/entities/machine.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 import {
@@ -24,11 +25,19 @@ export class Registries {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @ManyToOne(() => Machine, (machine) => machine.registries)
+  @ManyToOne(() => Machine, (machine) => machine.registries, {
+    onDelete: 'RESTRICT',
+  })
   @JoinColumn({ name: 'machine_id' })
   machine: Machine;
 
-  @ManyToOne(() => User, (user) => user.registries)
+  @ManyToOne(() => Factory, (factory) => factory.registries, {
+    onDelete: 'RESTRICT',
+  })
+  @JoinColumn({ name: 'factory_id' })
+  factory: Factory;
+
+  @ManyToOne(() => User, (user) => user.registries, { onDelete: 'RESTRICT' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 }
