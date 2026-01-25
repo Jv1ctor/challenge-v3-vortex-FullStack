@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { GetUserWithPasswordDto } from './dtos/get-user-with-password.dto';
 import bcrypt from 'bcrypt';
@@ -120,6 +120,9 @@ export class UsersService {
       relations: { factory: true },
     });
 
+    if (!user || user?.deletedAt)
+      throw new ConflictException(ErrorMessage.USER_ALREADY_DELETED);
+
     if (!user) throw new NotFoundException(ErrorMessage.USER_NOT_FOUND);
 
     if (user.factory !== null && user.factory.id)
@@ -160,7 +163,14 @@ export class UsersService {
         name: username,
       },
       relations: { factory: true },
+
+      withDeleted: true,
     });
+
+    if (existUser && existUser.deletedAt)
+      throw new ConflictException(
+        ErrorMessage.USERNAME_ALREADY_EXIST_IN_DELETED_USER,
+      );
 
     if (existUser)
       throw new ConflictException(ErrorMessage.USERNAME_ALREADY_EXISTS);
@@ -174,6 +184,26 @@ export class UsersService {
       name: username,
       password: hashedPass,
       factory: { id: factoryId },
+    });
+  }
+
+  async disableUser(userId: string) {
+    const user = await this.userRepository.findOneBy({
+      id: userId,
+      isAdmin: false,
+    });
+
+    if (!user) {
+      throw new NotFoundException(ErrorMessage.USER_NOT_FOUND);
+    }
+
+    if (user.deletedAt) {
+      return;
+    }
+
+    await this.userRepository.softDelete({
+      id: userId,
+      isAdmin: Not(true),
     });
   }
 }
