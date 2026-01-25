@@ -28,7 +28,6 @@ export const FormFactory = ({ onSubmit, initialData, type }: Props) => {
       },
     [initialData],
   )
-  console.log(initialFormData)
   const { formData, errors, fetchError, handleChange, handleSubmit } =
     useForm<FactoryFormData>({
       initialData: initialFormData,
@@ -37,7 +36,6 @@ export const FormFactory = ({ onSubmit, initialData, type }: Props) => {
     })
   
 
-  // console.log(formData) 
   if (type === "edit") {
     configForm.buttonContent = "Salvar"
     configForm.title = "Editar Fabrica"

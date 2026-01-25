@@ -98,7 +98,9 @@ export const FactoriesService = {
 
     const formatted = result.data.map((it) => ({
       ...it,
-      last_registry_at: it.last_registry_at ? formatDate(it.last_registry_at) : null,
+      last_registry_at: it.last_registry_at
+        ? formatDate(it.last_registry_at)
+        : null,
     }))
 
     return {
@@ -245,19 +247,35 @@ export const FactoriesService = {
     return true
   },
 
-  async updateUserInFactory(
-    token: string,
-    body: UpdateUser,
-  ) {
+  async updateUserInFactory(token: string, body: UpdateUser) {
+    const response = await fetch(`http://localhost:4000/api/users/operator`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+      credentials: "include",
+    })
+
+    if (!response.ok) {
+      console.log(`RESPONSE STATUS: ${response.status}`)
+      const result: ResponseErrors = await response.json()
+      throw result
+    }
+
+    return true
+  },
+
+  async deleteFactory(token: string, factoryId: number) {
     const response = await fetch(
-      `http://localhost:4000/api/users/operator`,
+      `http://localhost:4000/api/factories/${factoryId}`,
       {
-        method: "PATCH",
+        method: "DELETE",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(body),
         credentials: "include",
       },
     )
@@ -270,5 +288,47 @@ export const FactoriesService = {
 
     return true
   },
-  
+
+  async deleteMachine(token: string, machineId: number) {
+    const response = await fetch(
+      `http://localhost:4000/api/machines/${machineId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
+      },
+    )
+
+    if (!response.ok) {
+      console.log(`RESPONSE STATUS: ${response.status}`)
+      const result: ResponseErrors = await response.json()
+      throw result
+    }
+
+    return true
+  },
+  async deleteUser(token: string, userId: string) {
+    const response = await fetch(
+      `http://localhost:4000/api/users/operator/${userId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
+      },
+    )
+
+    if (!response.ok) {
+      console.log(`RESPONSE STATUS: ${response.status}`)
+      const result: ResponseErrors = await response.json()
+      throw result
+    }
+
+    return true
+  },
 }
