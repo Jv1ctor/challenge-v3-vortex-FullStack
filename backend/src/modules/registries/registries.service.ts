@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Registries } from './entities/registries.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,10 +12,18 @@ export class RegistriesService {
     private readonly registryRepository: Repository<Registries>,
   ) {}
 
-  async insertRegistry(machineId: number, userId: string, value: number) {
+  async insertRegistry(
+    machineId: number,
+    factoryId: number,
+    userId: string,
+    value: number,
+  ) {
     await this.registryRepository.insert({
       machine: {
         id: machineId,
+      },
+      factory: {
+        id: factoryId,
       },
       user: {
         id: userId,
@@ -46,6 +54,17 @@ export class RegistriesService {
         createdAt: 'DESC',
       },
       relations: { user: true },
+      withDeleted: true,
     });
+  }
+
+  async updateValueRegistry(registryId: number, value: number) {
+    const result = await this.registryRepository.update(
+      { id: registryId },
+      { value },
+    );
+    if (result.affected === 0) {
+      throw new NotFoundException(ErrorMessage.REGISTRY_NOT_FOUND);
+    }
   }
 }
