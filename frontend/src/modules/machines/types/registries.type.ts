@@ -8,3 +8,12 @@ export type Registries = {
     isAdmin: boolean
   }
 }
+
+export type RegistriesByMachine = {
+  id: number
+  name: string
+  description: string
+  manufacturer: string
+  model: string
+  data: Registries[]
+}

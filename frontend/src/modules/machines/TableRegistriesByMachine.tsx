@@ -6,18 +6,60 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip"
-import { useLoaderData } from "react-router"
-import type { Registries } from "./types/registries.type"
+import { useLoaderData, useRevalidator } from "react-router"
+import type { RegistriesByMachine } from "./types/registries.type"
 import { SquarePen } from "lucide-react"
+import { SheetTrigger } from "@/shared/components/ui/sheet"
+import { FormRegistry } from "./forms/FormRegistry"
+import type { RegistryFormData } from "./schemas/registry.schema"
+import { useHandleFormTable } from "@/shared/hooks/handle-form-table.hooks"
+import { useAuth } from "../auth/hooks/auth.hook"
+import { RegistriesService } from "./services/registries.service"
 
 export const TableRegistriesByMachine = () => {
-  const data = useLoaderData() as Registries[]
+  const data = useLoaderData() as RegistriesByMachine
+  const { revalidate } = useRevalidator()
+  const { token } = useAuth()
+  const {
+    activeForm,
+    closeForm,
+    setOpen,
+    open,
+    idRef,
+    openEditForm,
+    selectedData,
+  } = useHandleFormTable<RegistryFormData>()
+
+  const handleEditSubmit = async (formData: RegistryFormData) => {
+    if (!token) return
+    if (!idRef || typeof idRef !== "number") return
+    const result = await RegistriesService.updateRegistry(
+      token,
+      idRef,
+      formData.value,
+    )
+
+    if (result) {
+      revalidate()
+      closeForm()
+    }
+  }
 
   return (
     <>
       <TableData
-        title="Listagem de Registros da {MAQUINA}"
+        openSheet={open}
+        onOpenSheet={setOpen}
+        title={`Listagem de Registros da ${data.name}`}
         tableCaption="Listagem dos Registros"
+        sheetContent={
+          activeForm && (
+            <FormRegistry
+              initialData={selectedData}
+              onSubmit={handleEditSubmit}
+            />
+          )
+        }
         tableRowHeader={
           <TableRow>
             <TableHead className="text-muted-foreground uppercase">
@@ -34,7 +76,7 @@ export const TableRegistriesByMachine = () => {
             </TableHead>
           </TableRow>
         }
-        tableRowBody={data.map((it) => (
+        tableRowBody={data.data.map((it) => (
           <TableRow key={it.id}>
             <TableCell>{it.value.toFixed(2)} kWh</TableCell>
             <TableCell>{it.createdAt}</TableCell>
@@ -43,13 +85,23 @@ export const TableRegistriesByMachine = () => {
               <div className="flex gap-5 justify-end">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="bg-muted text-muted-foreground cursor-pointer hover:bg-primary hover:text-primary-foreground"
-                    >
-                      <SquarePen />
-                    </Button>
+                    <SheetTrigger asChild>
+                      <Button
+                        onClick={() =>
+                          openEditForm(
+                            {
+                              value: it.value,
+                            },
+                            it.id,
+                          )
+                        }
+                        variant="ghost"
+                        size="icon"
+                        className="bg-muted text-muted-foreground cursor-pointer hover:bg-primary hover:text-primary-foreground"
+                      >
+                        <SquarePen />
+                      </Button>
+                    </SheetTrigger>
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>Editar Registro</p>
