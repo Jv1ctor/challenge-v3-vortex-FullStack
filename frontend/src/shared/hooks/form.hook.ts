@@ -64,7 +64,7 @@ export const useForm = <T>({
     }
   }
 
-  const handleChange = (field: keyof T, value: string) => {
+  const handleChange = (field: keyof T, value: string | number) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
     setFetchError("")
 
