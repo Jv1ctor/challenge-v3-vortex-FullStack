@@ -1,7 +1,6 @@
 services:
   web:
     container_name: challenge-web
-    image: challenge-v3-frontend:prod
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod
@@ -11,7 +10,6 @@ services:
       - /app
   api:
     container_name: challenge-api
-    image: challenge-v3-backend:prod
     env_file:
       - ./backend/.env.prod
     build: 
