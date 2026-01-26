@@ -12,7 +12,7 @@ import {
   SelectItem,
 } from "@/shared/components/ui/select"
 import { Button } from "@/shared/components/ui/button"
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts"
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 import { useState, useEffect, useCallback } from "react"
 import { DashboardService } from "./services/dashboard.service"
 import { FactoriesService } from "@/modules/factories/services/factories.service"
@@ -156,6 +156,7 @@ export const DashboardMonthFactory = () => {
                 textAnchor="end"
                 height={80}
               />
+              <YAxis />
               <ChartTooltip
                 cursor={false}
                 content={<ChartTooltipContent hideLabel />}
