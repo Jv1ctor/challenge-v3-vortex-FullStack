@@ -33,7 +33,7 @@ export const TableData = ({
 }: Props) => {
   return (
     <>
-      <div className="">
+      <div>
         <Sheet open={openSheet} onOpenChange={onOpenSheet}>
           <div className="flex items-center justify-between bg-primary-foreground border-t-2 border-x-2 py-5 px-6 rounded-t-4xl">
             <h2 className="text-lg font-semibold text-secondary-foreground">
