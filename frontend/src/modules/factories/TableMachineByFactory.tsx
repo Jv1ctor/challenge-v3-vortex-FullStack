@@ -119,9 +119,13 @@ export const TableMachineByFactory = () => {
         }
         tableRowBody={data.data.map((it) => (
           <TableRow key={it.id}>
-            <TableCell>{it.name}</TableCell>
-            <TableCell>{it.model || ""}</TableCell>
-            <TableCell>{it.manufacturer || ""}</TableCell>
+            <TableCell className="whitespace-normal wrap-break-word max-w-56">{it.name}</TableCell>
+            <TableCell className="whitespace-normal wrap-break-word max-w-56">
+              {it.model || ""}
+            </TableCell>
+            <TableCell className="whitespace-normal wrap-break-word max-w-56">
+              {it.manufacturer || ""}
+            </TableCell>
             <TableCell className="text-center">{it.total_registries}</TableCell>
             <TableCell className="text-center">
               {it.total_value.toFixed(2)}

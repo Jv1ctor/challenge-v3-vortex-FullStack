@@ -17,7 +17,7 @@ import { FactoriesService } from "./services/factories.service"
 import { useAuth } from "../auth/hooks/auth.hook"
 
 export const TableFactories = () => {
-  const data = useLoaderData() as Factories[]
+  const data = useLoaderData() as Factories[] ?? []
   const { revalidate } = useRevalidator()
   const { token } = useAuth()
   const {
@@ -101,7 +101,7 @@ export const TableFactories = () => {
         }
         tableRowBody={data.map((it) => (
           <TableRow key={it.id}>
-            <TableCell>{it.name}</TableCell>
+            <TableCell className="whitespace-normal wrap-break-word max-w-56">{it.name}</TableCell>
             <TableCell className="max-w-md">
               <div className="whitespace-normal wrap-break-word">
                 {it.address && it.city && it.country
