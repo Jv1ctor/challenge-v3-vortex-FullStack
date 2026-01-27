@@ -7,7 +7,7 @@ export const CreateMachineReqSchema = z.object({
     .string()
     .trim()
     .min(2)
-    .max(60)
+    .max(225)
     .toLowerCase()
     .normalize('NFC')
     .regex(SAFE_TEXT, ErrorMessage.FIELD_INVALID),
@@ -16,7 +16,7 @@ export const CreateMachineReqSchema = z.object({
     .string()
     .trim()
     .min(2)
-    .max(60)
+    .max(225)
     .regex(SAFE_TEXT, ErrorMessage.FIELD_INVALID)
     .optional(),
 
@@ -24,7 +24,7 @@ export const CreateMachineReqSchema = z.object({
     .string()
     .trim()
     .min(2)
-    .max(60)
+    .max(225)
     .regex(SAFE_TEXT, ErrorMessage.FIELD_INVALID)
     .optional(),
 
