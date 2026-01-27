@@ -9,7 +9,7 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   const port = configService.get<number>('PORT', 3000);
-  const urlWeb = configService.get<string>('URL_WEB', 'http://localhost:300');
+  const urlWeb = configService.get<string>('URL_WEB', 'http://localhost:3000');
 
   app.enableCors({
     origin: urlWeb,
