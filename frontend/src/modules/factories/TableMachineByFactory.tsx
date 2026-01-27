@@ -136,7 +136,7 @@ export const TableMachineByFactory = () => {
               <div className="flex gap-5 justify-end">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <NavLink to={`/machines/${it.id}/registries`} end>
+                    <NavLink to={`${it.id}/registries`} end>
                       <Button
                         variant="ghost"
                         size="icon"
