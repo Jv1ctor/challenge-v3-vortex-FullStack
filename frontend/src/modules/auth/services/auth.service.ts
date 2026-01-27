@@ -5,6 +5,7 @@ type LoginData = {
 
 type ResponseApiLogin = {
   access_token: string
+  name: string
 }
 
 export const loginRequest = async (data: LoginData) => {
@@ -28,7 +29,7 @@ export const loginRequest = async (data: LoginData) => {
     }
 
     const result: ResponseApiLogin = await response.json()
-    return result.access_token
+    return { accessToken: result.access_token, username: result.name }
   } catch (error) {
     if (error instanceof Error) console.error(error.message)
     return null
