@@ -9,12 +9,12 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   const port = configService.get<number>('PORT', 3000);
-  const urlWeb = configService.get<string>('URL_WEB', 'http://localhost:3000');
+  const urlWeb = configService.get<string>('URL_WEB');
 
   app.enableCors({
-    origin: urlWeb,
+    origin: urlWeb ? urlWeb.split(',') : [],
     credentials: true,
   });
-  await app.listen(port ?? 3000);
+  await app.listen(port, '0.0.0.0');
 }
 bootstrap();

@@ -1,41 +1,9 @@
 services:
   web:
-    container_name: challenge-web
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod
-    ports:
-      - 3000:5173
-    volumes:
-      - /app
   api:
-    container_name: challenge-api
-    env_file:
-      - ./backend/.env.prod
-    build: 
+    build:
       context: ./backend
       dockerfile: Dockerfile.prod
-    ports:
-      - 4000:3000
-    volumes:
-      - /app
-    depends_on:
-      - db
-  db:
-    container_name: challenge-db
-    image: postgres:16-alpine
-    restart: always
-    env_file:
-      - ./backend/.env.dev
-    environment:
-       POSTGRES_USER: ${DB_USER}
-       POSTGRES_PASSWORD: ${DB_PASS}
-       POSTGRES_DB: ${DB_NAME}
-    ports:
-      - 5000:5432
-    volumes:
-      - industry-manager-db
-
-volumes:
-  industry-manager-db:
-          
