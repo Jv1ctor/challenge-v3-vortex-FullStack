@@ -1,3 +1,1 @@
-export const baseUrl: string = "https://api-production-c8ec.up.railway.app"
-
-console.log(import.meta.env)
+export const baseUrl: string = import.meta.env.VITE_API_URL
