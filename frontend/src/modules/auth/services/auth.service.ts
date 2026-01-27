@@ -1,3 +1,5 @@
+import { baseUrl } from "@/shared/services/api.service"
+
 type LoginData = {
   username: string
   password: string
@@ -15,7 +17,7 @@ export const loginRequest = async (data: LoginData) => {
       password: data.password,
     })
 
-    const response = await fetch("http://localhost:4000/api/auth/web/login", {
+    const response = await fetch(`${baseUrl}/api/auth/web/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

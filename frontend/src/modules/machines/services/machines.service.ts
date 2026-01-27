@@ -1,5 +1,6 @@
 import { formatDate } from "@/shared/lib/formatted-date"
 import type { RegistriesByMachine } from "../types/registries.type"
+import { baseUrl } from "@/shared/services/api.service"
 
 export const MachineService = {
   async getRegistriesByMachine(
@@ -7,7 +8,7 @@ export const MachineService = {
     machineId: number,
   ): Promise<RegistriesByMachine> {
     const response = await fetch(
-      `http://localhost:4000/api/machines/${machineId}/registries`,
+      `${baseUrl}/api/machines/${machineId}/registries`,
       {
         method: "GET",
         headers: {

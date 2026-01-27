@@ -1,5 +1,6 @@
 import { formattedMonth } from "@/shared/lib/formatted-date"
 import type { GetKwhMonthFactory } from "../types/getKwhMonthFactory.type"
+import { baseUrl } from "@/shared/services/api.service"
 
 export const DashboardService = {
   async getKwhByMonthFactoryYear(
@@ -7,8 +8,8 @@ export const DashboardService = {
     factoryId: number,
     year?: number,
   ): Promise<GetKwhMonthFactory> {
-    let url = `http://localhost:4000/api/dashboard/consumption?groupBy=month&factoryId=${factoryId}`
-    
+    let url = `${baseUrl}/api/dashboard/consumption?groupBy=month&factoryId=${factoryId}`
+
     if (year) {
       url += `&year=${year}`
     }
