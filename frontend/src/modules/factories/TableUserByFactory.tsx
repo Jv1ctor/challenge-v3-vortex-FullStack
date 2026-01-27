@@ -6,7 +6,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip"
-import { SquarePen } from "lucide-react"
+import { SquarePen, Trash2 } from "lucide-react"
 import { useLoaderData, useRevalidator } from "react-router"
 import type { UsersByFactories } from "./types/users-by-factories.type"
 import { useHandleFormTable } from "@/shared/hooks/handle-form-table.hooks"
@@ -55,6 +55,15 @@ export const TableUserByFactory = () => {
     if (result) {
       revalidate()
       closeForm()
+    }
+  }
+
+  const handleDelete = async (userId: string) => {
+    if (!token) return
+    const result = await FactoriesService.deleteUser(token, userId)
+
+    if (result) {
+      revalidate()
     }
   }
 
@@ -124,6 +133,22 @@ export const TableUserByFactory = () => {
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>Editar Operador</p>
+                  </TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={() => handleDelete(it.id)}
+                      variant="ghost"
+                      size="icon"
+                      className="bg-transparent text-destructive border-2 border-destructive cursor-pointer hover:bg-destructive hover:text-white"
+                    >
+                      <Trash2 />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Deletar Usuario</p>
                   </TooltipContent>
                 </Tooltip>
               </div>

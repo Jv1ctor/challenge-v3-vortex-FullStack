@@ -10,3 +10,14 @@ export function formatDate(dateString: string): string {
     .format(date)
     .replace(",", " -")
 }
+
+export function formattedMonth(dateString: string) {
+  const date = new Date(dateString)
+  const month = new Intl.DateTimeFormat("pt-br", {
+    month: "short",
+    year: "2-digit",
+    timeZone: "UTC"
+  }).format(date)
+
+  return month
+}

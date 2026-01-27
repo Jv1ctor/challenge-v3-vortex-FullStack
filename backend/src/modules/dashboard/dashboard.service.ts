@@ -12,11 +12,21 @@ export class DashboardService {
     return await this.consumptionRepository.getKwhByMonth();
   }
 
-  async getKwhByMachines(): Promise<GetKwhByMachinesDto[]> {
-    return await this.consumptionRepository.getkwhByMachine();
+  async getKwhMonthByFactory(
+    factoryId: number,
+    year?: number,
+  ): Promise<GetKwhByMonthDto[]> {
+    return await this.consumptionRepository.getKwhMonthByFactoryAndYear(
+      factoryId,
+      year,
+    );
   }
 
-  async getKwhByFactories(): Promise<GetKwhByFactoriesDto[]> {
-    return await this.consumptionRepository.getkwhByFactory();
+  async getKwhByMachinesAll(): Promise<GetKwhByMachinesDto[]> {
+    return await this.consumptionRepository.getkwhByMachineAll();
+  }
+
+  async getKwhByFactoriesAll(): Promise<GetKwhByFactoriesDto[]> {
+    return await this.consumptionRepository.getkwhByFactoryAll();
   }
 }

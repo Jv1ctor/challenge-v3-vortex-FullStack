@@ -2,31 +2,28 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Registries } from './entities/registries.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Machine } from 'src/modules/machines/entities/machine.entity';
-import { RegistriesDto } from './dtos/registries.dto';
 import { ErrorMessage } from 'src/common/enums/error-message.enum';
+import { RegistriesDto } from './dtos/registries.dto';
 
 @Injectable()
 export class RegistriesService {
   constructor(
     @InjectRepository(Registries)
     private readonly registryRepository: Repository<Registries>,
-    @InjectRepository(Machine)
-    private readonly machineRepository: Repository<Machine>,
   ) {}
 
-  async insertRegistry(machineId: number, userId: string, value: number) {
-    const existMachine = await this.machineRepository.findOne({
-      where: { id: machineId },
-      relations: { factory: true },
-    });
-
-    if (!existMachine)
-      throw new NotFoundException(ErrorMessage.MACHINE_NOT_FOUND);
-
+  async insertRegistry(
+    machineId: number,
+    factoryId: number,
+    userId: string,
+    value: number,
+  ) {
     await this.registryRepository.insert({
       machine: {
         id: machineId,
+      },
+      factory: {
+        id: factoryId,
       },
       user: {
         id: userId,
@@ -36,13 +33,6 @@ export class RegistriesService {
   }
 
   async getAllRegistriesByMachine(machineId: number): Promise<RegistriesDto[]> {
-    const existMachine = await this.machineRepository.findOneBy({
-      id: machineId,
-    });
-
-    if (!existMachine)
-      throw new NotFoundException(ErrorMessage.MACHINE_NOT_FOUND);
-
     return this.registryRepository.find({
       where: {
         machine: {
@@ -64,6 +54,17 @@ export class RegistriesService {
         createdAt: 'DESC',
       },
       relations: { user: true },
+      withDeleted: true,
     });
+  }
+
+  async updateValueRegistry(registryId: number, value: number) {
+    const result = await this.registryRepository.update(
+      { id: registryId },
+      { value },
+    );
+    if (result.affected === 0) {
+      throw new NotFoundException(ErrorMessage.REGISTRY_NOT_FOUND);
+    }
   }
 }

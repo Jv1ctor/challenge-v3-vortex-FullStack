@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Param,
@@ -144,7 +145,7 @@ export class FactoriesController {
     return {
       id: factory.id,
       name: factory.name,
-      created_at: factory,
+      created_at: factory.createdAt,
       data: await this.usersService.getAllUserByFactory(factoryId),
     };
   }
@@ -184,5 +185,12 @@ export class FactoriesController {
   ) {
     await this.factoryService.getFactoryInfo(factoryId);
     await this.machineService.updateMachine(factoryId, machineId, body);
+  }
+
+  @Delete(':id')
+  @HttpCode(202)
+  @Roles(Role.Admin, Role.Manager)
+  async disableFactory(@Param('id', ParseIntPipe) id: number) {
+    await this.factoryService.disableFactory(id);
   }
 }

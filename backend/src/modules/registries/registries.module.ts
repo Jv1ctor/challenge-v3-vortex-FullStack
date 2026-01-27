@@ -2,11 +2,12 @@ import { Module } from '@nestjs/common';
 import { RegistriesService } from './registries.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Registries } from './entities/registries.entity';
-import { Machine } from 'src/modules/machines/entities/machine.entity';
+import { RegistriesController } from './registries.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Registries, Machine])],
+  imports: [TypeOrmModule.forFeature([Registries])],
   exports: [RegistriesService],
   providers: [RegistriesService],
+  controllers: [RegistriesController],
 })
 export class RegistriesModule {}

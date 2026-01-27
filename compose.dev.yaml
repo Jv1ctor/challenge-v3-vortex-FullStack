@@ -2,6 +2,8 @@ services:
   web:
     container_name: challenge-web
     image: challenge-v3-frontend:dev
+    env_file:
+      - ./frontend/.env.dev
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
@@ -19,7 +21,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile.dev
     ports:
-      - 4000:3000
+      - 4000:4000
+    
     volumes:
       - ./backend:/app
       - /app/node_modules

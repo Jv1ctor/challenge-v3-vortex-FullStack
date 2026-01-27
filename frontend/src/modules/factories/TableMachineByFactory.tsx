@@ -3,7 +3,7 @@ import { Button } from "@/shared/components/ui/button"
 import { TableCell, TableHead, TableRow } from "@/shared/components/ui/table"
 import { Tooltip } from "@/shared/components/ui/tooltip"
 import { TooltipContent, TooltipTrigger } from "@/shared/components/ui/tooltip"
-import { NotebookPen, SquarePen } from "lucide-react"
+import { NotebookPen, SquarePen, Trash2 } from "lucide-react"
 import { NavLink, useLoaderData, useRevalidator } from "react-router"
 import type { MachinesByFactory } from "./types/machines-by-factories.type"
 import { FormMachine } from "./forms/FormMachine"
@@ -55,6 +55,15 @@ export const TableMachineByFactory = () => {
     if (result) {
       revalidate()
       closeForm()
+    }
+  }
+
+  const handleDelete = async (machineId: number) => {
+    if (!token) return
+    const result = await FactoriesService.deleteMachine(token, machineId)
+
+    if (result) {
+      revalidate()
     }
   }
 
@@ -110,9 +119,13 @@ export const TableMachineByFactory = () => {
         }
         tableRowBody={data.data.map((it) => (
           <TableRow key={it.id}>
-            <TableCell>{it.name}</TableCell>
-            <TableCell>{it.model || ""}</TableCell>
-            <TableCell>{it.manufacturer || ""}</TableCell>
+            <TableCell className="whitespace-normal wrap-break-word max-w-56">{it.name}</TableCell>
+            <TableCell className="whitespace-normal wrap-break-word max-w-56">
+              {it.model || ""}
+            </TableCell>
+            <TableCell className="whitespace-normal wrap-break-word max-w-56">
+              {it.manufacturer || ""}
+            </TableCell>
             <TableCell className="text-center">{it.total_registries}</TableCell>
             <TableCell className="text-center">
               {it.total_value.toFixed(2)}
@@ -123,7 +136,7 @@ export const TableMachineByFactory = () => {
               <div className="flex gap-5 justify-end">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <NavLink to={`/machines/${it.id}/registries`} end>
+                    <NavLink to={`${it.id}/registries`} end>
                       <Button
                         variant="ghost"
                         size="icon"
@@ -164,6 +177,22 @@ export const TableMachineByFactory = () => {
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>Editar Maquina</p>
+                  </TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={() => handleDelete(it.id)}
+                      variant="ghost"
+                      size="icon"
+                      className="bg-transparent text-destructive border-2 border-destructive cursor-pointer hover:bg-destructive hover:text-white"
+                    >
+                      <Trash2 />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Deletar Maquina</p>
                   </TooltipContent>
                 </Tooltip>
               </div>

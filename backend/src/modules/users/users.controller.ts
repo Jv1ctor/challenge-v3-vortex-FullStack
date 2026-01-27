@@ -1,8 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
+  Param,
+  ParseUUIDPipe,
   Patch,
   Post,
   Req,
@@ -50,5 +53,12 @@ export class UsersController {
       body.user_id,
       body.password,
     );
+  }
+
+  @Delete('operator/:id')
+  @HttpCode(202)
+  @Roles(Role.Admin, Role.Manager)
+  async disableOperator(@Param('id', ParseUUIDPipe) id: string) {
+    return await this.usersService.disableUser(id);
   }
 }

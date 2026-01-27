@@ -3,6 +3,7 @@ import { Registries } from 'src/modules/registries/entities/registries.entity';
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -31,7 +32,12 @@ export class User {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @ManyToOne(() => Factory, (factory) => factory.users)
+  @DeleteDateColumn({ name: 'deleted_at' })
+  deletedAt?: Date;
+
+  @ManyToOne(() => Factory, (factory) => factory.users, {
+    onDelete: 'RESTRICT',
+  })
   @JoinColumn({ name: 'factory_id' })
   factory: Factory;
 

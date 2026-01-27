@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Param,
@@ -50,8 +51,14 @@ export class MachinesController {
   @Get(':id/registries')
   async getAllRegistriesByMachine(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<{ data: RegistriesByMachineDto[] }> {
+  ): Promise<RegistriesByMachineDto> {
+    const machine = await this.machineService.getMachine(id);
     return {
+      id: machine.id,
+      name: machine.name,
+      description: machine.description,
+      manufacturer: machine.manufacturer,
+      model: machine.model,
       data: await this.registriesService.getAllRegistriesByMachine(id),
     };
   }
@@ -66,10 +73,19 @@ export class MachinesController {
     body: InsertRegistriesByMachineDto,
     @Req() request: Request,
   ) {
+    const machine = await this.machineService.getMachine(id);
     await this.registriesService.insertRegistry(
       id,
+      machine.factory.id,
       request.user.id,
       body.value,
     );
+  }
+
+  @Delete(':id')
+  @HttpCode(202)
+  @Roles(Role.Admin, Role.Manager)
+  async disableMachine(@Param('id', ParseIntPipe) id: number) {
+    await this.machineService.disableMachine(id);
   }
 }

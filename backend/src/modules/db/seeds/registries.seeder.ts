@@ -1,5 +1,6 @@
 import { Registries } from 'src/modules/registries/entities/registries.entity';
 import { Machine } from 'src/modules/machines/entities/machine.entity';
+import { Factory } from 'src/modules/factories/entities/factory.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 import { DataSource } from 'typeorm';
 
@@ -17,10 +18,10 @@ export async function registriesSeeder(datasource: DataSource): Promise<void> {
 
   const registries: Partial<Registries>[] = [];
 
-  // Meses de 2025 (Janeiro a Dezembro)
+  // Meses do ano (Janeiro a Dezembro)
   const months = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
-  // Para cada máquina, criar 5 registries em meses diferentes
+  // Para cada máquina, criar 10 registries em 2025 e 10 em 2024
   machines.forEach((machine, machineIndex) => {
     // Filtrar usuários da mesma fábrica que a máquina
     const usersInSameFactory = users.filter(
@@ -35,30 +36,32 @@ export async function registriesSeeder(datasource: DataSource): Promise<void> {
       return;
     }
 
-    for (let i = 0; i < 5; i++) {
-      // Selecionar um usuário da mesma fábrica de forma distribuída
-      const user = usersInSameFactory[i % usersInSameFactory.length];
+    // Função auxiliar para criar N registros em um determinado ano
+    const createForYear = (year: number, count: number) => {
+      for (let i = 0; i < count; i++) {
+        const user = usersInSameFactory[i % usersInSameFactory.length];
+        const month = months[(machineIndex * count + i) % 12];
 
-      // Selecionar um mês diferente para cada registry
-      const month = months[(machineIndex * 5 + i) % 12];
+        const day = Math.floor(Math.random() * 28) + 1;
+        const hour = Math.floor(Math.random() * 24);
+        const minute = Math.floor(Math.random() * 60);
 
-      // Criar data aleatória no mês selecionado
-      const day = Math.floor(Math.random() * 28) + 1; // Dias de 1 a 28 para evitar problemas com meses diferentes
-      const hour = Math.floor(Math.random() * 24);
-      const minute = Math.floor(Math.random() * 60);
+        const createdAt = new Date(Date.UTC(year, month, day, hour, minute));
+        const value = parseFloat((Math.random() * 450 + 50).toFixed(2));
 
-      const createdAt = new Date(2025, month, day, hour, minute);
+        registries.push({
+          value,
+          machine: { id: machine.id } as Machine,
+          user: { id: user.id } as User,
+          factory: { id: machine.factory!.id } as Factory,
+          createdAt,
+        });
+      }
+    };
 
-      // Gerar valor aleatório de consumo entre 50 e 500 kWh
-      const value = parseFloat((Math.random() * 450 + 50).toFixed(2));
-
-      registries.push({
-        value,
-        machine: { id: machine.id } as Machine,
-        user: { id: user.id } as User,
-        createdAt,
-      });
-    }
+    // Criar 10 registros em 2025 e 10 registros em 2024 por máquina
+    createForYear(2025, 10);
+    createForYear(2024, 10);
   });
 
   // Ordenar por data para inserir em ordem cronológica
@@ -66,6 +69,6 @@ export async function registriesSeeder(datasource: DataSource): Promise<void> {
 
   await registryRepository.save(registries);
   console.log(
-    `✓ ${registries.length} registries criados (5 por máquina, distribuídos em 2025)`,
+    `✓ ${registries.length} registries criados (20 por máquina: 10 em 2025 e 10 em 2024)`,
   );
 }

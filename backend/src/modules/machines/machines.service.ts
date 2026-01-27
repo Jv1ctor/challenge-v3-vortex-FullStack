@@ -101,9 +101,16 @@ export class MachinesService {
       description?: string;
     },
   ) {
-    const existMachine = await this.machinesRepository.findOneBy({
-      name: machine.name,
+    const existMachine = await this.machinesRepository.findOne({
+      where: { name: machine.name },
+      relations: { factory: true },
+      withDeleted: true,
     });
+
+    if (existMachine && existMachine.deletedAt)
+      throw new ConflictException(
+        ErrorMessage.MACHINE_ALREADY_EXIST_IN_DELETED_MACHINE,
+      );
 
     if (existMachine)
       throw new ConflictException(ErrorMessage.MACHINE_NAME_ALREADY_EXISTS);
@@ -119,9 +126,15 @@ export class MachinesService {
     machineId: number,
     machine: UpdatedMachineDto,
   ) {
-    const existMachine = await this.machinesRepository.findOneBy({
-      name: machine.name,
+    const existMachine = await this.machinesRepository.findOne({
+      where: { name: machine.name },
+      withDeleted: true,
     });
+
+    if (existMachine && existMachine.deletedAt)
+      throw new ConflictException(
+        ErrorMessage.MACHINE_ALREADY_EXIST_IN_DELETED_MACHINE,
+      );
 
     if (existMachine)
       throw new ConflictException(ErrorMessage.MACHINE_NAME_ALREADY_EXISTS);
@@ -148,5 +161,23 @@ export class MachinesService {
       where: { id: machineId, factory: { users: { id: userId } } },
     });
     return !!relation;
+  }
+
+  async disableMachine(machineId: number) {
+    const machine = await this.machinesRepository.findOneBy({
+      id: machineId,
+    });
+
+    if (!machine) {
+      throw new NotFoundException(ErrorMessage.MACHINE_NOT_FOUND);
+    }
+
+    if (machine.deletedAt) {
+      return;
+    }
+
+    await this.machinesRepository.softDelete({
+      id: machineId,
+    });
   }
 }

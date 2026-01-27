@@ -85,7 +85,7 @@ export const LoginFormCard = () => {
           </form>
         </CardContent>
 
-        <CardFooter className="flex-col mt-4 px-44">
+        <CardFooter className="flex-col mt-4 px-28">
           <Button type="submit" form="login-form" className="w-full">
             {isLoading ? <Spinner className="size-6" /> : "Entrar"}
           </Button>

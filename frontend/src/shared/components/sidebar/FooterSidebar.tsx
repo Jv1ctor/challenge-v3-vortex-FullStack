@@ -6,12 +6,19 @@ import {
 } from "@/shared/components/ui/sidebar"
 import { LogOutIcon } from "lucide-react"
 import { Avatar, AvatarFallback } from "@/shared/components/ui/avatar"
+import { useAuth } from "@/modules/auth/hooks/auth.hook"
 
 type Props = {
   onClick: () => void
 }
 
 export const FooterSideBar = ({ onClick }: Props) => {
+  const { username } = useAuth()
+
+  const getIconUsername = (username?: string | null) => {
+    return username ? username[0].toUpperCase() : "U"
+  }
+
   return (
     <SidebarFooter>
       <SidebarMenu className="gap-3">
@@ -30,10 +37,10 @@ export const FooterSideBar = ({ onClick }: Props) => {
             {/* <SidebarMenuButton> */}
             <Avatar>
               <AvatarFallback className="bg-blue-500 text-white">
-                U
+                {getIconUsername(username)}
               </AvatarFallback>
             </Avatar>
-            <span>Username</span>
+            <span>{username ? username?.toUpperCase () : "Username"}</span>
             {/* </SidebarMenuButton> */}
           </div>
         </SidebarMenuItem>

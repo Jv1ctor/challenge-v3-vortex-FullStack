@@ -24,7 +24,15 @@ export class FactoriesService {
     city?: string,
     country?: string,
   ): Promise<CreateFactoryResDto> {
-    const existFactory = await this.factoryRepository.findOneBy({ name });
+    const existFactory = await this.factoryRepository.findOne({
+      where: { name },
+      withDeleted: true,
+    });
+
+    if (existFactory && existFactory.deletedAt)
+      throw new ConflictException(
+        ErrorMessage.FACTORY_ALREADY_EXIST_IN_DELETED_FACTORY,
+      );
 
     if (existFactory)
       throw new ConflictException(ErrorMessage.FACTORY_ALREADY_REGISTERED);
@@ -49,14 +57,20 @@ export class FactoriesService {
   }
 
   async updateFactory(factoryId: number, factory: UpdateFactoryDto) {
-    const existNameFactory = await this.factoryRepository.find({
+    const existNameFactory = await this.factoryRepository.findOne({
       where: {
         name: factory.name,
         id: Not(factoryId),
       },
+      withDeleted: true,
     });
 
-    if (existNameFactory.length > 0)
+    if (existNameFactory && existNameFactory.deletedAt)
+      throw new ConflictException(
+        ErrorMessage.FACTORY_ALREADY_EXIST_IN_DELETED_FACTORY,
+      );
+
+    if (existNameFactory)
       throw new ConflictException(ErrorMessage.FACTORY_NAME_ALREADY_USED);
 
     await this.factoryRepository.update({ id: factoryId }, { ...factory });
@@ -86,5 +100,23 @@ export class FactoriesService {
       count_machines: i.machines.length,
       count_users: i.users.length,
     }));
+  }
+
+  async disableFactory(factoryId: number) {
+    const factory = await this.factoryRepository.findOneBy({
+      id: factoryId,
+    });
+
+    if (!factory) {
+      throw new NotFoundException(ErrorMessage.FACTORY_NOT_FOUND);
+    }
+
+    if (factory.deletedAt) {
+      return;
+    }
+
+    await this.factoryRepository.softDelete({
+      id: factoryId,
+    });
   }
 }

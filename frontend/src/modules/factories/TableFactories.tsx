@@ -6,7 +6,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip"
-import { Cog, SquarePen, Users } from "lucide-react"
+import { Cog, SquarePen, Trash2, Users } from "lucide-react"
 import { NavLink, useLoaderData, useRevalidator } from "react-router"
 import type { Factories } from "./types/factories.type"
 import { FormFactory } from "./forms/FormFactory"
@@ -17,7 +17,7 @@ import { FactoriesService } from "./services/factories.service"
 import { useAuth } from "../auth/hooks/auth.hook"
 
 export const TableFactories = () => {
-  const data = useLoaderData() as Factories[]
+  const data = useLoaderData() as Factories[] ?? []
   const { revalidate } = useRevalidator()
   const { token } = useAuth()
   const {
@@ -48,6 +48,15 @@ export const TableFactories = () => {
     if (result) {
       revalidate()
       closeForm()
+    }
+  }
+
+  const handleDelete = async (factoryId: number) => {
+    if (!token) return
+    const result = await FactoriesService.deleteFactory(token, factoryId)
+
+    if (result) {
+      revalidate()
     }
   }
 
@@ -92,7 +101,7 @@ export const TableFactories = () => {
         }
         tableRowBody={data.map((it) => (
           <TableRow key={it.id}>
-            <TableCell>{it.name}</TableCell>
+            <TableCell className="whitespace-normal wrap-break-word max-w-56">{it.name}</TableCell>
             <TableCell className="max-w-md">
               <div className="whitespace-normal wrap-break-word">
                 {it.address && it.city && it.country
@@ -164,6 +173,22 @@ export const TableFactories = () => {
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>Editar Fabrica</p>
+                  </TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={() => handleDelete(it.id)}
+                      variant="ghost"
+                      size="icon"
+                      className="bg-transparent text-destructive border-2 border-destructive cursor-pointer hover:bg-destructive hover:text-white"
+                    >
+                      <Trash2 />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Deletar Fabrica</p>
                   </TooltipContent>
                 </Tooltip>
               </div>

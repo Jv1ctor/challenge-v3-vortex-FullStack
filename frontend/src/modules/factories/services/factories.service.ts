@@ -7,6 +7,7 @@ import type { ResponseErrors } from "@/shared/types/response-errors.type"
 import type { UserFormData } from "../schemas/users.schema"
 import type { UsersByFactories } from "../types/users-by-factories.type"
 import type { UpdateUser } from "../types/update-user.type"
+import { baseUrl } from "@/shared/services/api.service"
 
 type ResponseApiGetAllFactories = {
   data: Factories[]
@@ -16,7 +17,7 @@ type ResponseApiGetMachinesByFactories = MachinesByFactory
 
 export const FactoriesService = {
   async getAllFactories(token: string): Promise<Factories[] | null> {
-    const response = await fetch("http://localhost:4000/api/factories", {
+    const response = await fetch(`${baseUrl}/api/factories`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -39,7 +40,7 @@ export const FactoriesService = {
     factoryId: number,
   ): Promise<MachinesByFactory | null> {
     const response = await fetch(
-      `http://localhost:4000/api/factories/${factoryId}/machines`,
+      `${baseUrl}/api/factories/${factoryId}/machines`,
       {
         method: "GET",
         headers: {
@@ -77,17 +78,14 @@ export const FactoriesService = {
     token: string,
     factoryId: number,
   ): Promise<UsersByFactories> {
-    const response = await fetch(
-      `http://localhost:4000/api/factories/${factoryId}/user`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        credentials: "include",
+    const response = await fetch(`${baseUrl}/api/factories/${factoryId}/user`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-    )
+      credentials: "include",
+    })
 
     if (!response.ok) {
       console.log(`RESPONSE STATUS: ${response.status}`)
@@ -98,7 +96,9 @@ export const FactoriesService = {
 
     const formatted = result.data.map((it) => ({
       ...it,
-      last_registry_at: it.last_registry_at ? formatDate(it.last_registry_at) : null,
+      last_registry_at: it.last_registry_at
+        ? formatDate(it.last_registry_at)
+        : null,
     }))
 
     return {
@@ -111,7 +111,7 @@ export const FactoriesService = {
     token: string,
     body: FactoryFormData,
   ): Promise<{ id: number }> {
-    const response = await fetch(`http://localhost:4000/api/factories`, {
+    const response = await fetch(`${baseUrl}/api/factories`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -133,18 +133,15 @@ export const FactoriesService = {
   },
 
   async updateFactory(token: string, factoryId: number, body: FactoryFormData) {
-    const response = await fetch(
-      `http://localhost:4000/api/factories/${factoryId}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(body),
-        credentials: "include",
+    const response = await fetch(`${baseUrl}/api/factories/${factoryId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-    )
+      body: JSON.stringify(body),
+      credentials: "include",
+    })
 
     if (!response.ok) {
       console.log(`RESPONSE STATUS: ${response.status}`)
@@ -165,7 +162,7 @@ export const FactoriesService = {
     body: MachineFormData,
   ) {
     const response = await fetch(
-      `http://localhost:4000/api/factories/${factoryId}/machines`,
+      `${baseUrl}/api/factories/${factoryId}/machines`,
       {
         method: "POST",
         headers: {
@@ -193,7 +190,7 @@ export const FactoriesService = {
     body: MachineFormData,
   ) {
     const response = await fetch(
-      `http://localhost:4000/api/factories/${factoryId}/machines/${machineId}`,
+      `${baseUrl}/api/factories/${factoryId}/machines/${machineId}`,
       {
         method: "PUT",
         headers: {
@@ -223,18 +220,15 @@ export const FactoriesService = {
     factoryId: number,
     body: UserFormData,
   ) {
-    const response = await fetch(
-      `http://localhost:4000/api/factories/${factoryId}/user`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(body),
-        credentials: "include",
+    const response = await fetch(`${baseUrl}/api/factories/${factoryId}/user`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-    )
+      body: JSON.stringify(body),
+      credentials: "include",
+    })
 
     if (!response.ok) {
       console.log(`RESPONSE STATUS: ${response.status}`)
@@ -245,22 +239,16 @@ export const FactoriesService = {
     return true
   },
 
-  async updateUserInFactory(
-    token: string,
-    body: UpdateUser,
-  ) {
-    const response = await fetch(
-      `http://localhost:4000/api/users/operator`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(body),
-        credentials: "include",
+  async updateUserInFactory(token: string, body: UpdateUser) {
+    const response = await fetch(`${baseUrl}/api/users/operator`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-    )
+      body: JSON.stringify(body),
+      credentials: "include",
+    })
 
     if (!response.ok) {
       console.log(`RESPONSE STATUS: ${response.status}`)
@@ -270,5 +258,60 @@ export const FactoriesService = {
 
     return true
   },
-  
+
+  async deleteFactory(token: string, factoryId: number) {
+    const response = await fetch(`${baseUrl}/api/factories/${factoryId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      credentials: "include",
+    })
+
+    if (!response.ok) {
+      console.log(`RESPONSE STATUS: ${response.status}`)
+      const result: ResponseErrors = await response.json()
+      throw result
+    }
+
+    return true
+  },
+
+  async deleteMachine(token: string, machineId: number) {
+    const response = await fetch(`${baseUrl}/api/machines/${machineId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      credentials: "include",
+    })
+
+    if (!response.ok) {
+      console.log(`RESPONSE STATUS: ${response.status}`)
+      const result: ResponseErrors = await response.json()
+      throw result
+    }
+
+    return true
+  },
+  async deleteUser(token: string, userId: string) {
+    const response = await fetch(`${baseUrl}/api/users/operator/${userId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      credentials: "include",
+    })
+
+    if (!response.ok) {
+      console.log(`RESPONSE STATUS: ${response.status}`)
+      const result: ResponseErrors = await response.json()
+      throw result
+    }
+
+    return true
+  },
 }

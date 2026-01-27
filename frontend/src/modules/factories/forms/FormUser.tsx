@@ -1,7 +1,5 @@
 import { InputPasswordWithMessage } from "@/shared/components/InputPasswordWithMessage"
-import { Input } from "@/shared/components/ui/input"
 import { useForm } from "@/shared/hooks/form.hook"
-import { Label } from "@radix-ui/react-label"
 import { userSchema, type UserFormData } from "../schemas/users.schema"
 import { FormSheet } from "@/shared/components/sheet/FormSheet"
 
@@ -17,7 +15,7 @@ export const FormUser = ({ onSubmit, initialData, type }: Props) => {
     title: "Cadastro de operador",
     description: "Cadaste no operador nesta fabrica",
   }
-  const { formData, handleChange, errors, handleSubmit, fetchError } =
+  const { formData, handleChange, errors, handleSubmit } =
     useForm<UserFormData>({
       initialData: initialData ?? {
         username: "",
@@ -41,27 +39,6 @@ export const FormUser = ({ onSubmit, initialData, type }: Props) => {
       description={configForm.description}
     >
       <form id="user-form" onSubmit={handleSubmit} className="space-y-4 py-4">
-        <div className="space-y-2">
-          <Label htmlFor="username">
-            Nome de usuario <span className="text-destructive">*</span>
-          </Label>
-          <Input
-            id="username"
-            type="text"
-            placeholder="Digite o nome do usuario"
-            value={formData.username}
-            onChange={(e) => handleChange("username", e.target.value)}
-            aria-invalid={!!errors.username}
-            className={errors.username || fetchError ? "border-destructive" : ""}
-          />
-          { errors.username && (
-            <p className="text-sm text-destructive">{errors.username}</p>
-          )}
-          {fetchError && (
-            <p className="text-sm text-destructive">{fetchError}</p>
-          )}
-        </div>
-
         <div className="space-y-2">
           <InputPasswordWithMessage
             placeholder="Digite a senha do usuario"

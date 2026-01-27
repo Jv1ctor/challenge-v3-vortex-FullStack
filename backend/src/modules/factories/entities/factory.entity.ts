@@ -1,8 +1,10 @@
 import { Machine } from 'src/modules/machines/entities/machine.entity';
+import { Registries } from 'src/modules/registries/entities/registries.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -28,9 +30,15 @@ export class Factory {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
+  @DeleteDateColumn({ name: 'deleted_at' })
+  deletedAt?: Date;
+
   @OneToMany(() => User, (user) => user.factory)
   users: User[];
 
   @OneToMany(() => Machine, (machines) => machines.factory)
   machines: Machine[];
+
+  @OneToMany(() => Registries, (registry) => registry.factory)
+  registries: Registries[];
 }

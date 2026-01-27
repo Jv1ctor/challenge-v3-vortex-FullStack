@@ -12,43 +12,60 @@ export async function usersSeeder(datasource: DataSource): Promise<void> {
   // Buscar as factories criadas
   const factories = await factoryRepository.find();
 
-  // Hash da senha padrão
-  const hashedPassword = await bcrypt.hash('senha123', 10);
+  // Função utilitária: garante nome com mínimo de 7 caracteres
+  const ensureMinName = (n: string) => (n.length >= 7 ? n : n.padEnd(7, 'x'));
 
-  // Criar 5 usuários normais distribuídos entre as factories
+  // Hash da senha padrão (mínimo 8 caracteres)
+  const defaultPassword = 'senha1234';
+  const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+
+  // Criar 5 usuários normais distribuídos entre as factories (nomes garantidos com >=7 chars)
   const users = [
     {
-      name: 'joão_silva',
+      name: ensureMinName('joão_silva'),
       password: hashedPassword,
       isAdmin: false,
-      factory: factories[0], // Fábrica Norte
+      factory: factories[0], // fábrica norte
     },
     {
-      name: 'maria_santos',
+      name: ensureMinName('maria_santos'),
       password: hashedPassword,
       isAdmin: false,
-      factory: factories[0], // Fábrica Norte
+      factory: factories[0], // fábrica norte
     },
     {
-      name: 'pedro_oliveira',
+      name: ensureMinName('pedro_oliveira'),
       password: hashedPassword,
       isAdmin: false,
-      factory: factories[1], // Fábrica Sul
+      factory: factories[1], // fábrica sul
     },
     {
-      name: 'ana_costa',
+      name: ensureMinName('ana_costa'),
       password: hashedPassword,
       isAdmin: false,
-      factory: factories[1], // Fábrica Sul
+      factory: factories[1], // fábrica sul
     },
     {
-      name: 'carlos_souza',
+      name: ensureMinName('carlos_souza'),
       password: hashedPassword,
       isAdmin: false,
-      factory: factories[2], // Fábrica Leste
+      factory: factories[2], // fábrica leste
     },
   ];
 
+  // Adicionar 3 usuários para cada fábrica nova (indices 3..)
+  for (let f = 3; f < factories.length; f++) {
+    for (let u = 1; u <= 3; u++) {
+      const rawName = `user_${f + 1}_${u}`;
+      users.push({
+        name: ensureMinName(rawName),
+        password: hashedPassword,
+        isAdmin: false,
+        factory: factories[f],
+      });
+    }
+  }
+
   await userRepository.save(users);
-  console.log('✓ 5 usuários criados');
+  console.log(`✓ ${users.length} usuários criados`);
 }

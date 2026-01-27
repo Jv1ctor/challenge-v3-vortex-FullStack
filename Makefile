@@ -26,10 +26,10 @@ exec-seed:
 # WEB - COMMANDS
 
 up-web:
-	docker compose -f $(COMPOSE) up -d web
+	docker compose --env-file ./frontend/$(ENV) -f $(COMPOSE) up -d web
 
 down-web:
-	docker compose -f $(COMPOSE) down web
+	docker compose --env-file ./frontend/$(ENV) -f $(COMPOSE) down web
 
 rebuild-web:
-	docker compose -f $(COMPOSE) up -d --build web
+	docker compose --env-file ./frontend/$(ENV) -f $(COMPOSE) up -d --build web
