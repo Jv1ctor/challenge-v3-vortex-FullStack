@@ -35,7 +35,7 @@ export const FactoriesLoader = {
     try {
       const data = await FactoriesService.getAllMachinesByFactories(
         token,
-        Number(id)
+        Number(id),
       )
       return data
     } catch (error) {
@@ -50,7 +50,7 @@ export const FactoriesLoader = {
       return []
     }
   },
-  
+
   async getUsersByFactories({ params }: LoaderFunctionArgs) {
     const token = localStorage.getItem("token")
     const { id } = params as { id: string }
@@ -62,7 +62,7 @@ export const FactoriesLoader = {
     try {
       const data = await FactoriesService.getAllUsersByFactories(
         token,
-        Number(id)
+        Number(id),
       )
       return data || []
     } catch (error) {

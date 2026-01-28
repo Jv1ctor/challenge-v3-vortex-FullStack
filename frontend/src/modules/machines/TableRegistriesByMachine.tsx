@@ -6,7 +6,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip"
-import { useLoaderData, useRevalidator } from "react-router"
+import { useLoaderData, useNavigation, useRevalidator } from "react-router"
 import type { RegistriesByMachine } from "./types/registries.type"
 import { SquarePen } from "lucide-react"
 import { SheetTrigger } from "@/shared/components/ui/sheet"
@@ -19,6 +19,7 @@ import { RegistriesService } from "./services/registries.service"
 export const TableRegistriesByMachine = () => {
   const data = useLoaderData() as RegistriesByMachine
   const { revalidate } = useRevalidator()
+  const { state } = useNavigation()
   const { token } = useAuth()
   const {
     activeForm,
@@ -29,6 +30,14 @@ export const TableRegistriesByMachine = () => {
     openEditForm,
     selectedData,
   } = useHandleFormTable<RegistryFormData>()
+
+  const isLoading = state === "loading"
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-48">Carregando...</div>
+    )
+  }
 
   const handleEditSubmit = async (formData: RegistryFormData) => {
     if (!token) return

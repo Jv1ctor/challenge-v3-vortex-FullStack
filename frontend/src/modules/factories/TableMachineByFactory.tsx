@@ -4,7 +4,7 @@ import { TableCell, TableHead, TableRow } from "@/shared/components/ui/table"
 import { Tooltip } from "@/shared/components/ui/tooltip"
 import { TooltipContent, TooltipTrigger } from "@/shared/components/ui/tooltip"
 import { NotebookPen, SquarePen, Trash2 } from "lucide-react"
-import { NavLink, useLoaderData, useRevalidator } from "react-router"
+import { NavLink, useLoaderData, useNavigation, useRevalidator } from "react-router"
 import type { MachinesByFactory } from "./types/machines-by-factories.type"
 import { FormMachine } from "./forms/FormMachine"
 import type { MachineFormData } from "./schemas/machine.schema"
@@ -16,6 +16,7 @@ import { FactoriesService } from "./services/factories.service"
 export const TableMachineByFactory = () => {
   const data = useLoaderData() as MachinesByFactory
   const { revalidate } = useRevalidator()
+  const { state } = useNavigation()
   const { token } = useAuth()
   const {
     activeForm,
@@ -27,6 +28,14 @@ export const TableMachineByFactory = () => {
     openEditForm,
     selectedData,
   } = useHandleFormTable<MachineFormData>()
+
+  const isLoading = state === "loading"
+  
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-48">Carregando...</div>
+    )
+  }
 
   const handleSubmit = async (formData: MachineFormData) => {
     if (!token) return
@@ -119,7 +128,9 @@ export const TableMachineByFactory = () => {
         }
         tableRowBody={data.data.map((it) => (
           <TableRow key={it.id}>
-            <TableCell className="whitespace-normal wrap-break-word max-w-56">{it.name}</TableCell>
+            <TableCell className="whitespace-normal wrap-break-word max-w-56">
+              {it.name}
+            </TableCell>
             <TableCell className="whitespace-normal wrap-break-word max-w-56">
               {it.model || ""}
             </TableCell>

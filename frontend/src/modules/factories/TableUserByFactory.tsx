@@ -7,7 +7,7 @@ import {
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip"
 import { SquarePen, Trash2 } from "lucide-react"
-import { useLoaderData, useRevalidator } from "react-router"
+import { useLoaderData, useNavigation, useRevalidator } from "react-router"
 import type { UsersByFactories } from "./types/users-by-factories.type"
 import { useHandleFormTable } from "@/shared/hooks/handle-form-table.hooks"
 import type { UserFormData } from "./schemas/users.schema"
@@ -18,6 +18,7 @@ import { FactoriesService } from "./services/factories.service"
 export const TableUserByFactory = () => {
   const data = useLoaderData() as UsersByFactories
   const { revalidate } = useRevalidator()
+  const { state } = useNavigation()
   const { token } = useAuth()
   const {
     activeForm,
@@ -30,6 +31,13 @@ export const TableUserByFactory = () => {
     selectedData,
   } = useHandleFormTable<UserFormData>()
 
+  const isLoading = state === "loading"
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-48">Carregando...</div>
+    )
+  }
   const handleSubmit = async (formData: UserFormData) => {
     if (!token) return
     const result = await FactoriesService.createUserInFactory(
