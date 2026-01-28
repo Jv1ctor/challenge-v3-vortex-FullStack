@@ -13,8 +13,6 @@ import { useRouteHandle } from "../hooks/route-handle.hook"
 export const HeaderRoot = () => {
   const handle = useRouteHandle()
 
-  console.log(handle)
-
   return (
     <header className="flex shrink-0 items-center gap-2 border-b ease-linear">
       <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">

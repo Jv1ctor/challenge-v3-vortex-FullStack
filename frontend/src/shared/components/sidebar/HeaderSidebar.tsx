@@ -17,7 +17,7 @@ export const HeaderSidebar = () => {
               <div className="bg-primary text-primary-foreground p-1 rounded-md">
                 <Zap />
               </div>
-              <span className="text-base font-semibold">Energy Manager</span>
+              <span className="text-base font-semibold">DataEnergy</span>
             </NavLink>
           </SidebarMenuButton>
         </SidebarMenuItem>
