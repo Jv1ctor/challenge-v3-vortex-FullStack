@@ -15,6 +15,7 @@ export const useHandleFormTable = <T>() => {
   }
 
   const openCreateForm = () => {
+    setSelectedData(null)
     setActiveForm("create")
     setOpen(true)
   }
