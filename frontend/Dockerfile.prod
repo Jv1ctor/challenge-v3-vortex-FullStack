@@ -9,13 +9,19 @@ RUN pnpm install --frozen-lockfile
 
 COPY . .
 
+
+ARG VITE_API_URL
+
+ENV VITE_API_URL=${VITE_API_URL}
+
+
 RUN pnpm build
 
 
 # serve
 FROM nginx:alpine
 
-RUN rm /etc/ngix/conf.d/default.conf
+RUN rm -f /etc/ngix/conf.d/default.conf
 
 COPY nginx.conf /etc/nginx/conf.d
 
